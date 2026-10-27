@@ -9,7 +9,7 @@
 
 set -uo pipefail
 
-SERIAL="${SERIAL:-192.168.1.15:5555}"
+SERIAL="${SERIAL:?pasá SERIAL=<ip-de-la-tv>:5555 (adb connect <ip>:5555)}"
 ADB="${ADB:-adb}"   # poné ADB=/ruta/a/platform-tools/adb si no está en PATH
 [ "$#" -ge 1 ] || { echo "usage: $0 <package> [...]" >&2; exit 2; }
 

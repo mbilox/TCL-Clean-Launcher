@@ -1,7 +1,12 @@
 # TCL BeyondTV2 (AR05) — telemetry / ads / ACR debloat report
 
 **Date:** 2026-10-26 (host UTC; unit local 2026-10-26 01:07 -03)
-**Unit:** TCL BeyondTV2 @ 192.168.1.15:5555 (adb over TCP, authorized)
+**Unit:** TCL BeyondTV2 @ <TV_IP>:5555 (adb over TCP, authorized)
+
+> **Redaction note.** The address of the unit appears as `<TV_IP>` and the raw `getprop`
+> dump is not published: it carries the device serial, `android_id` and `boot_id`. The
+> committed `evidence/getprop-pre.txt` keeps only model/board/build identity.
+
 **Firmware:** `TCL/BeyondTV2/BeyondTV:11/PPR1.180610.011/AR05:user/release-keys` — Android TV 11, `ro.build.version.sdk=30`
 **Method:** `pm disable-user --user 0 <pkg>` only. No uninstall, no reboot, no `pm clear`, no settings changes, no installs, no package re-enabled.
 **Reference:** `cleanyourtv/examples/tcl-beyondtv2-android-11/debloat.txt` (same model + build number, Android 11 variant)
@@ -153,7 +158,7 @@ run despite being recorded as already disabled. Whatever reverted them (reboot, 
 `pm install`/`PACKAGE_CHANGED` path) may do it again. Re-check with:
 
 ```
-adb -s 192.168.1.15:5555 shell pm list packages -d | grep -E 'tcl\.bi|tclhome_passive|waterfall|messagebox|partnersetup|tcl\.guard|android.feedback'
+adb -s <TV_IP>:5555 shell pm list packages -d | grep -E 'tcl\.bi|tclhome_passive|waterfall|messagebox|partnersetup|tcl\.guard|android.feedback'
 ```
 
 ---
@@ -163,19 +168,19 @@ adb -s 192.168.1.15:5555 shell pm list packages -d | grep -E 'tcl\.bi|tclhome_pa
 One-liner, exactly the 7 packages disabled here — it does not touch anything else:
 
 ```
-adb -s 192.168.1.15:5555 shell "pm enable com.tcl.bi; pm enable com.tcl.tv.tclhome_passive; pm enable com.tcl.waterfall.overseas; pm enable com.tcl.messagebox; pm enable com.google.android.partnersetup; pm enable com.tcl.guard; pm enable com.google.android.feedback"
+adb -s <TV_IP>:5555 shell "pm enable com.tcl.bi; pm enable com.tcl.tv.tclhome_passive; pm enable com.tcl.waterfall.overseas; pm enable com.tcl.messagebox; pm enable com.google.android.partnersetup; pm enable com.tcl.guard; pm enable com.google.android.feedback"
 ```
 
 Per-package form:
 
 ```
-adb -s 192.168.1.15:5555 shell pm enable com.tcl.bi
-adb -s 192.168.1.15:5555 shell pm enable com.tcl.tv.tclhome_passive
-adb -s 192.168.1.15:5555 shell pm enable com.tcl.waterfall.overseas
-adb -s 192.168.1.15:5555 shell pm enable com.tcl.messagebox
-adb -s 192.168.1.15:5555 shell pm enable com.google.android.partnersetup
-adb -s 192.168.1.15:5555 shell pm enable com.tcl.guard
-adb -s 192.168.1.15:5555 shell pm enable com.google.android.feedback
+adb -s <TV_IP>:5555 shell pm enable com.tcl.bi
+adb -s <TV_IP>:5555 shell pm enable com.tcl.tv.tclhome_passive
+adb -s <TV_IP>:5555 shell pm enable com.tcl.waterfall.overseas
+adb -s <TV_IP>:5555 shell pm enable com.tcl.messagebox
+adb -s <TV_IP>:5555 shell pm enable com.google.android.partnersetup
+adb -s <TV_IP>:5555 shell pm enable com.tcl.guard
+adb -s <TV_IP>:5555 shell pm enable com.google.android.feedback
 ```
 
 (The 21 packages that were already disabled before this task are **not** in this block — re-enabling them is
