@@ -21,3 +21,12 @@ bench-results/
 *.aab
 launcher/hs_err_pid*.log
 launcher/replay_pid*.log
+
+# --- TCL Clean Launcher fork ---
+# Signing material never enters the repo: the keystore lives outside (../../keys/) and the
+# properties file that points at it stays local.
+launcher/keystore.properties
+*.jks
+*.keystore
+# Local Android toolchain (JDK/SDK) is kept outside the repo, referenced by launcher/local.properties.
+.gradle/

@@ -1,0 +1,148 @@
+Activity Resolver Table:
+  Non-Data Actions:
+      android.intent.action.MAIN:
+        240cce4 com.tcl.tv.tclhome_passive/com.tcl.tclhome_passive.HomePassiveActivity filter 5ce54d
+          Action: "android.intent.action.MAIN"
+          Category: "android.intent.category.LAUNCHER"
+
+Receiver Resolver Table:
+  Non-Data Actions:
+      com.tcl.passive.restart_register:
+        bf94802 com.tcl.tv.tclhome_passive/com.tcl.tclhome_passive.broadcast.BootCompleteReceiver filter 6c6d47c
+          Action: "com.tcl.passive.restart_register"
+      com.tcl.usercenter.userloginsucess:
+        bf94802 com.tcl.tv.tclhome_passive/com.tcl.tclhome_passive.broadcast.BootCompleteReceiver filter 7afd350
+          Action: "com.tcl.usercenter.userloginsucess"
+      android.intent.action.BOOT_COMPLETED:
+        bf94802 com.tcl.tv.tclhome_passive/com.tcl.tclhome_passive.broadcast.BootCompleteReceiver filter a07513
+          Action: "android.intent.action.BOOT_COMPLETED"
+          Category: "android.intent.category.LAUNCHER"
+      com.tcl.usercenter.userRefreshToken:
+        bf94802 com.tcl.tv.tclhome_passive/com.tcl.tclhome_passive.broadcast.BootCompleteReceiver filter 3934f6f
+          Action: "com.tcl.usercenter.userRefreshToken"
+      com.tcl.usercenter.logoutSuccess:
+        bf94802 com.tcl.tv.tclhome_passive/com.tcl.tclhome_passive.broadcast.BootCompleteReceiver filter 81f8949
+          Action: "com.tcl.usercenter.logoutSuccess"
+      android.intent.action.MY_PACKAGE_REPLACED:
+        bf94802 com.tcl.tv.tclhome_passive/com.tcl.tclhome_passive.broadcast.BootCompleteReceiver filter 8b7e24e
+          Action: "android.intent.action.MY_PACKAGE_REPLACED"
+
+Permissions:
+  Permission [com.tcl.tv.home.passive.contentProvider.permission] (17e860b):
+    sourcePackage=com.tcl.tv.tclhome_passive
+    uid=10105 gids=null type=0 prot=normal
+    perm=Permission{7389ce8 com.tcl.tv.home.passive.contentProvider.permission}
+
+Registered ContentProviders:
+  com.tcl.tv.tclhome_passive/com.tcl.tclhome_passive.provider.AppPassiveContentProvider:
+    Provider{659af01 com.tcl.tv.tclhome_passive/com.tcl.tclhome_passive.provider.AppPassiveContentProvider}
+
+ContentProvider Authorities:
+  [org.passive.saas_token.cloud_url.providers]:
+    Provider{659af01 com.tcl.tv.tclhome_passive/com.tcl.tclhome_passive.provider.AppPassiveContentProvider}
+      applicationInfo=ApplicationInfo{236c202 com.tcl.tv.tclhome_passive}
+
+Key Set Manager:
+  [com.tcl.tv.tclhome_passive]
+      Signing KeySets: 2
+
+Packages:
+  Package [com.tcl.tv.tclhome_passive] (28d77e7):
+    userId=10105
+    pkg=Package{46e9f94 com.tcl.tv.tclhome_passive}
+    codePath=/product/app/TCLHome_passive
+    resourcePath=/product/app/TCLHome_passive
+    legacyNativeLibraryDir=/product/app/TCLHome_passive/lib
+    primaryCpuAbi=armeabi
+    secondaryCpuAbi=null
+    versionCode=10211 minSdk=23 targetSdk=28
+    versionName=1.2.1.1
+    splits=[base]
+    apkSigningVersion=3
+    applicationInfo=ApplicationInfo{46e9f94 com.tcl.tv.tclhome_passive}
+    flags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    privateFlags=[ PRIVATE_FLAG_ACTIVITIES_RESIZE_MODE_RESIZEABLE_VIA_SDK_VERSION PRIVATE_FLAG_REQUEST_LEGACY_EXTERNAL_STORAGE PRODUCT PRIVATE_FLAG_ALLOW_NATIVE_HEAP_POINTER_TAGGING ]
+    forceQueryable=false
+    queriesPackages=[]
+    dataDir=/data/user/0/com.tcl.tv.tclhome_passive
+    supportsScreens=[small, medium, large, xlarge, resizeable, anyDensity]
+    usesLibraries:
+      android.test.base
+      android.hidl.manager-V1.0-java
+      android.hidl.base-V1.0-java
+    usesOptionalLibraries:
+      com.tcl.deviceinfo
+      com.tcl.device.authentication
+      org.apache.http.legacy
+    usesLibraryFiles:
+      /system/framework/android.test.base.jar
+      /system/framework/android.hidl.manager-V1.0-java.jar
+      /system/framework/android.hidl.base-V1.0-java.jar
+      /system/framework/org.apache.http.legacy.jar
+    timeStamp=2008-12-31 22:00:00
+    firstInstallTime=2008-12-31 22:00:00
+    lastUpdateTime=2008-12-31 22:00:00
+    signatures=PackageSignatures{8313a3d version:3, signatures:[124cab85], past signatures:[]}
+    installPermissionsFixed=true
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    declared permissions:
+      com.tcl.tv.home.passive.contentProvider.permission: prot=normal, INSTALLED
+    requested permissions:
+      android.permission.ACCESS_WIFI_STATE
+      android.permission.INTERNET
+      android.permission.ACCESS_NETWORK_STATE
+      android.permission.MOUNT_UNMOUNT_FILESYSTEM
+      android.permission.WRITE_EXTERNAL_STORAGE: restricted=true
+      android.permission.READ_EXTERNAL_STORAGE: restricted=true
+      android.permission.INSTALL_SELF_UPDATES
+      android.permission.SYSTEM_ALERT_WINDOW
+      android.permission.SYSTEM_OVERLAY_WINDOW
+      com.tcl.usercenter.receiver_broadcast
+      android.permission.FOREGROUND_SERVICE
+      android.permission.INJECT_EVENTS
+      android.permission.RECEIVE_BOOT_COMPLETED
+      android.permission.RESTART_PACKAGES
+      android.permission.ACCESS_MEDIA_LOCATION
+    install permissions:
+      android.permission.RESTART_PACKAGES: granted=true
+      android.permission.SYSTEM_ALERT_WINDOW: granted=true
+      android.permission.FOREGROUND_SERVICE: granted=true
+      android.permission.RECEIVE_BOOT_COMPLETED: granted=true
+      android.permission.INTERNET: granted=true
+      android.permission.ACCESS_NETWORK_STATE: granted=true
+      android.permission.INSTALL_SELF_UPDATES: granted=true
+      android.permission.ACCESS_WIFI_STATE: granted=true
+      android.permission.INJECT_EVENTS: granted=true
+    User 0: ceDataInode=485 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false
+      gids=[3003]
+      runtime permissions:
+        android.permission.READ_EXTERNAL_STORAGE: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED|RESTRICTION_UPGRADE_EXEMPT]
+        android.permission.WRITE_EXTERNAL_STORAGE: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED|RESTRICTION_UPGRADE_EXEMPT]
+        android.permission.ACCESS_MEDIA_LOCATION: granted=false, flags=[ REVOKE_WHEN_REQUESTED|USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED]
+
+Queries:
+  system apps queryable: false
+  forceQueryable:
+    com.tcl.tv.tclhome_passive
+  queries via package name:
+  queries via intent:
+  queryable via interaction:
+    User 0:
+      com.tcl.usercenter:
+        com.tcl.tv.tclhome_passive
+
+Package Changes:
+  Sequence number=2
+  User 0:
+    seq=1, package=com.google.android.tvrecommendations
+
+
+Dexopt state:
+  [com.tcl.tv.tclhome_passive]
+    path: /product/app/TCLHome_passive/TCLHome_passive.apk
+      arm: [status=speed-profile] [reason=bg-dexopt]
+
+
+Compiler stats:
+  [com.tcl.tv.tclhome_passive]
+     TCLHome_passive.apk - 2063

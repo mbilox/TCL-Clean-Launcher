@@ -1,0 +1,164 @@
+Receiver Resolver Table:
+  Non-Data Actions:
+      com.google.android.partnersetup.ACTION_RLZ_FIRST_USE:
+        e9fa485 com.google.android.partnersetup/.RlzPingBroadcastReceiver filter fa625e8
+          Action: "com.google.android.partnersetup.ACTION_RLZ_FIRST_USE"
+      com.google.android.partnersetup.intent.UPDATE_CLIENT_ID:
+        6176ef com.google.android.partnersetup/.UpdateIntentReceiver filter 796a5fc
+          Action: "com.google.android.partnersetup.intent.UPDATE_CLIENT_ID"
+      com.google.android.partnersetup.ACTION_RLZ_ACTIVATION:
+        e9fa485 com.google.android.partnersetup/.RlzPingBroadcastReceiver filter 278930b
+          Action: "com.google.android.partnersetup.ACTION_RLZ_ACTIVATION"
+      android.intent.action.SIM_STATE_CHANGED:
+        9dc84c9 com.google.android.partnersetup/.PhoneStateReceiver filter fcff7ce
+          Action: "android.intent.action.SIM_STATE_CHANGED"
+      com.google.android.partnersetup.ACTION_RLZ_UPLOAD:
+        e9fa485 com.google.android.partnersetup/.RlzPingBroadcastReceiver filter 2bb0401
+          Action: "com.google.android.partnersetup.ACTION_RLZ_UPLOAD"
+      com.google.gservices.intent.action.GSERVICES_CHANGED:
+        e9fa485 com.google.android.partnersetup/.RlzPingBroadcastReceiver filter e9f32a6
+          Action: "com.google.gservices.intent.action.GSERVICES_CHANGED"
+        d9b54e7 com.google.android.partnersetup/.GservicesChangedReceiver filter abb894
+          Action: "com.google.gservices.intent.action.GSERVICES_CHANGED"
+      android.intent.action.BOOT_COMPLETED:
+        2332493 com.google.android.partnersetup/.GooglePartnerSetup filter 19d8cd0
+          Action: "android.intent.action.BOOT_COMPLETED"
+        e9fa485 com.google.android.partnersetup/.RlzPingBroadcastReceiver filter 1f7c2da
+          Action: "android.intent.action.BOOT_COMPLETED"
+      com.google.android.gms.phenotype.UPDATE:
+        1d2df3d com.google.android.partnersetup/.PhenotypeBroadcastReceiver filter cfbd332
+          Action: "com.google.android.gms.phenotype.UPDATE"
+
+Permissions:
+  Permission [com.google.android.partnersetup.permission.UPDATE_CLIENT_ID] (9a0deb7):
+    sourcePackage=com.google.android.partnersetup
+    uid=10033 gids=null type=0 prot=signature|privileged
+    perm=Permission{5e4c624 com.google.android.partnersetup.permission.UPDATE_CLIENT_ID}
+
+Permissions:
+  Permission [com.google.android.partnersetup.permission.WRITE_APP_PROVIDER] (a9f858d):
+    sourcePackage=com.google.android.partnersetup
+    uid=10033 gids=null type=0 prot=signature|privileged
+    perm=Permission{8ab0342 com.google.android.partnersetup.permission.WRITE_APP_PROVIDER}
+
+Permissions:
+  Permission [com.google.android.partnersetup.permission.ACCESS_PROVIDER] (2daaf53):
+    sourcePackage=com.google.android.partnersetup
+    uid=10033 gids=null type=0 prot=signature
+    perm=Permission{5ba2090 com.google.android.partnersetup.permission.ACCESS_PROVIDER}
+
+Registered ContentProviders:
+  com.google.android.partnersetup/.RlzProvider:
+    Provider{58bed89 com.google.android.partnersetup/.RlzProvider}
+  com.google.android.partnersetup/.RlzAppProvider:
+    Provider{fea118e com.google.android.partnersetup/.RlzAppProvider}
+
+ContentProvider Authorities:
+  [com.google.android.partnersetup.rlzappprovider]:
+    Provider{fea118e com.google.android.partnersetup/.RlzAppProvider}
+      applicationInfo=ApplicationInfo{e702114 com.google.android.partnersetup}
+  [com.google.android.partnersetup.rlzprovider]:
+    Provider{58bed89 com.google.android.partnersetup/.RlzProvider}
+      applicationInfo=ApplicationInfo{94a5dbd com.google.android.partnersetup}
+
+Key Set Manager:
+  [com.google.android.partnersetup]
+      Signing KeySets: 6
+
+Packages:
+  Package [com.google.android.partnersetup] (ebcd945):
+    userId=10033
+    pkg=Package{f9b89a com.google.android.partnersetup}
+    codePath=/system/system_ext/priv-app/GooglePartnerSetup
+    resourcePath=/system/system_ext/priv-app/GooglePartnerSetup
+    legacyNativeLibraryDir=/system/system_ext/priv-app/GooglePartnerSetup/lib
+    primaryCpuAbi=null
+    secondaryCpuAbi=null
+    versionCode=1114 minSdk=28 targetSdk=30
+    versionName=100.316795284
+    splits=[base]
+    apkSigningVersion=3
+    applicationInfo=ApplicationInfo{f9b89a com.google.android.partnersetup}
+    flags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    privateFlags=[ PRIVATE_FLAG_ACTIVITIES_RESIZE_MODE_RESIZEABLE_VIA_SDK_VERSION ALLOW_AUDIO_PLAYBACK_CAPTURE PRIVILEGED SYSTEM_EXT PRIVATE_FLAG_ALLOW_NATIVE_HEAP_POINTER_TAGGING ]
+    forceQueryable=false
+    queriesPackages=[]
+    dataDir=/data/user/0/com.google.android.partnersetup
+    supportsScreens=[small, medium, large, xlarge, resizeable, anyDensity]
+    usesOptionalLibraries:
+      org.apache.http.legacy
+    usesLibraryFiles:
+      /system/framework/org.apache.http.legacy.jar
+    timeStamp=2008-12-31 22:00:00
+    firstInstallTime=2008-12-31 14:00:00
+    lastUpdateTime=2008-12-31 22:00:00
+    signatures=PackageSignatures{1aeb5cb version:3, signatures:[e3ca78d8], past signatures:[]}
+    installPermissionsFixed=true
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    declared permissions:
+      com.google.android.partnersetup.permission.UPDATE_CLIENT_ID: prot=signature|privileged, INSTALLED
+      com.google.android.partnersetup.permission.ACCESS_PROVIDER: prot=signature, INSTALLED
+      com.google.android.partnersetup.permission.WRITE_APP_PROVIDER: prot=signature|privileged, INSTALLED
+    requested permissions:
+      android.permission.QUERY_ALL_PACKAGES
+      com.google.android.providers.settings.permission.WRITE_GSETTINGS
+      com.google.android.providers.settings.permission.READ_GSETTINGS
+      android.permission.READ_PRIVILEGED_PHONE_STATE
+      android.permission.ACCESS_WIFI_STATE
+      android.permission.RECEIVE_BOOT_COMPLETED
+      android.permission.INTERNET
+      com.google.android.providers.gsf.permission.READ_GSERVICES
+      com.google.android.providers.gsf.permission.WRITE_GSERVICES
+      android.permission.CHANGE_COMPONENT_ENABLED_STATE
+      android.permission.CHANGE_CONFIGURATION
+      android.permission.ACCESS_NETWORK_STATE
+      com.android.launcher.permission.PRELOAD_WORKSPACE
+      android.permission.READ_PHONE_STATE
+    install permissions:
+      com.google.android.providers.gsf.permission.READ_GSERVICES: granted=true
+      android.permission.CHANGE_COMPONENT_ENABLED_STATE: granted=true
+      com.google.android.providers.gsf.permission.WRITE_GSERVICES: granted=true
+      android.permission.RECEIVE_BOOT_COMPLETED: granted=true
+      com.google.android.providers.settings.permission.READ_GSETTINGS: granted=true
+      android.permission.INTERNET: granted=true
+      android.permission.READ_PRIVILEGED_PHONE_STATE: granted=true
+      com.google.android.providers.settings.permission.WRITE_GSETTINGS: granted=true
+      android.permission.ACCESS_NETWORK_STATE: granted=true
+      android.permission.CHANGE_CONFIGURATION: granted=true
+      android.permission.ACCESS_WIFI_STATE: granted=true
+      android.permission.QUERY_ALL_PACKAGES: granted=true
+    User 0: ceDataInode=711 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false
+      gids=[3003]
+      runtime permissions:
+        android.permission.READ_PHONE_STATE: granted=true, flags=[ SYSTEM_FIXED|GRANTED_BY_DEFAULT|REVOKE_WHEN_REQUESTED]
+      disabledComponents:
+        com.google.android.partnersetup.PhoneStateReceiver
+
+Queries:
+  system apps queryable: false
+  queries via package name:
+  queries via intent:
+  queryable via interaction:
+    User 0:
+      [com.tcl.copydatatotv,com.tcl.messagebox,com.tcl.tv.tclhome_master,com.android.tv.settings,com.tcl.initsetup,com.tcl.settings,com.tcl.assistant,com.tcl.tv,com.android.location.fused,com.tcl.ui_mediaCenter,com.tcl.MultiScreenInteraction_TV,com.tcl.esticker,com.tcl.providers.config,com.tcl.smartalexa,com.android.keychain,uk.co.freeview.systemdistributor,com.android.localtransport,com.tcl.guard,com.tcl.micmanager,android,com.tcl.gallery,com.google.android.tv.assistant,com.tcl.autopair,com.tcl.overseasappshow,com.tcl.factory.view,com.tcl.partnercustomizer,com.android.wallpaperbackup,com.tcl.tvinput,com.tcl.keycustomfunctionservice,com.android.dynsystem,com.tcl.systemserver,com.android.inputdevices,com.tcl.miracast,com.android.providers.settings,com.android.networkstack.inprocess,com.android.networkstack.tethering.inprocess,com.tcl.versionUpdateApp]:
+        com.google.android.partnersetup
+      [com.google.android.gms,com.google.android.sss.authbridge,com.google.android.gsf]:
+        com.google.android.partnersetup
+      com.google.android.partnersetup:
+        [com.tcl.copydatatotv,com.tcl.messagebox,com.tcl.tv.tclhome_master,com.android.tv.settings,com.tcl.initsetup,com.tcl.settings,com.tcl.assistant,com.tcl.tv,com.android.location.fused,com.tcl.ui_mediaCenter,com.tcl.MultiScreenInteraction_TV,com.tcl.esticker,com.tcl.providers.config,com.tcl.smartalexa,com.android.keychain,uk.co.freeview.systemdistributor,com.android.localtransport,com.tcl.guard,com.tcl.micmanager,android,com.tcl.gallery,com.google.android.tv.assistant,com.tcl.autopair,com.tcl.overseasappshow,com.tcl.factory.view,com.tcl.partnercustomizer,com.android.wallpaperbackup,com.tcl.tvinput,com.tcl.keycustomfunctionservice,com.android.dynsystem,com.tcl.systemserver,com.android.inputdevices,com.tcl.miracast,com.android.providers.settings,com.android.networkstack.inprocess,com.android.networkstack.tethering.inprocess,com.tcl.versionUpdateApp]
+
+Package Changes:
+  Sequence number=2
+  User 0:
+    seq=1, package=com.google.android.tvrecommendations
+
+
+Dexopt state:
+  [com.google.android.partnersetup]
+    path: /system/system_ext/priv-app/GooglePartnerSetup/GooglePartnerSetup.apk
+      arm: [status=speed-profile] [reason=bg-dexopt]
+
+
+Compiler stats:
+  [com.google.android.partnersetup]
+     GooglePartnerSetup.apk - 1184

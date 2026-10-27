@@ -1,0 +1,408 @@
+--------- beginning of system
+10-26 01:07:15.719   704   914 I AppRecordTransition: {"version":1,"processStateBM":{"pkg":"com.google.android.katniss","uid":10024,"pid":3757,"bm":0}}
+--------- beginning of main
+10-26 01:07:15.720  3757  3814 I katniss_search_SystemSearchableSources: createSources
+10-26 01:07:15.720   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 3, package name is com.google.android.katniss, bitMap is 0
+10-26 01:07:15.721   704  1739 I AppRecordManager: noteFinishReceivingBroadcast [2017, TclProcessAppRecord{c136bce 0:com.android.providers.tv/u0a7}] isOrdered true
+10-26 01:07:15.721   704  1739 I AppRecord: noteFinishReceivingBroadcast: pkg=com.android.providers.tv pid = 2017 isOrdered true
+10-26 01:07:15.721   704   914 I AppRecordManager: handleMessage # { when=0 what=23 obj=Bundle[{isOrdered=true, pid=2017, pkg=com.android.providers.tv, uid=10007, using=false}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:15.721   704   914 I AppRecordTransition: noteBroadcastChanged uid = 10007 pid = 2017 pkg = com.android.providers.tv isOrdered = true
+10-26 01:07:15.721   704   914 I AppRecordTransition: {"version":1,"processStateBM":{"pkg":"com.android.providers.tv","uid":10007,"pid":2017,"bm":4}}
+10-26 01:07:15.720   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 3, package name is com.google.android.katniss, bitMap is 0
+10-26 01:07:15.722   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 3, package name is com.android.providers.tv, bitMap is 4
+10-26 01:07:15.723   704  1739 I AppRecordManager: ReceivingBroadcast [4013, TclProcessAppRecord{b0939fc 0:com.android.vending/u0a12}] isOrdered true
+10-26 01:07:15.723   704  1739 I AppRecord: noteReceivingBroadcast: pkg=com.android.vending pid = 4013 isOrdered true
+10-26 01:07:15.725  1621  1922 I katniss_interactor_PackageCache: Apps for Intent { act=android.intent.action.MAIN cat=[android.intent.category.LEANBACK_LAUNCHER] }: [AppInfo(enabled=true, longVersionCode=1, packageName=com.android.tv.settings, versionCode=1, versionName=1.0), AppInfo(enabled=true, longVersionCode=85341708, packageName=com.android.vending, versionCode=85341708, versionName=53.4.17-24 [8] [PR] 988500596), AppInfo(enabled=true, longVersionCode=530340320, packageName=com.google.android.youtube.tv, versionCode=530340320, versionName=5.30.340), AppInfo(enabled=true, longVersionCode=112007300, packageName=com.google.android.youtube.tvmusic, versionCode=112007300, versionName=1.12.07), AppInfo(enabled=true, longVersionCode=10000, packageName=com.tcl.tv, versionCode=10000, versionName=1.00.00_593330c_220516), AppInfo(enabled=true, longVersionCode=606024120, packageName=com.amazon.amazonvideo.livingroom, versionCode=606024120, versionName=6.24.12+v16.0.1.23-allAbis), AppInfo(enabled=true, longVersionCode=708365470, packageName=com.google.android.play.games, versionCode=708365470, versionName=2026.10.70836 (1002888414.1002888414-040700)), AppInfo(enabled=true, longVersionCode=44015257, packageName=com.google.android.videos, versionCode=44015257, versionName=4.40.15.23-tv), AppInfo(enabled=true, longVersionCode=12041, packageName=com.netflix.ninja, versionCode=12041, versionName=8.3.11 build 12041), AppInfo(enabled=true, longVersionCode=20402781, packageName=com.tcl.MultiScreenInteraction_TV, versionCode=20402781, versionName=4.2.781), AppInfo(enabled=true, longVersionCode=1020020, packageName=com.tcl.notereminder, versionCode=1020020, versionName=1.02.0020), AppInfo(enabled=true, longVersionCode=947, packageName=com.tcl.partnercustomizer, versionCode=947, versionName=9.47.gl.e75c913), AppInfo(enabled=true, longVersionCode=10023, packageName=com.tcl.tv.tclhome_master, versionCode=10023, versionName=1.0.2.3), AppInfo(enabled=true, longVersionCode=600000065, packageName=com.tcl.ui_mediaCenter, versionCode=600000065, versionName=6.00.65), AppInfo(enabled=true, longVersionCode=905100003, packageName=ar.com.flow.androidtv, versionCode=905100003, versionName=4.110.3), AppInfo(enabled=true, longVersionCode=32, packageName=br.eddy.tvhome, versionCode=32, versionName=0.6.0), AppInfo(enabled=true, longVersionCode=520000962, packageName=com.cbs.ca, versionCode=520000962, versionName=17.2.0), AppInfo(enabled=true, longVersionCode=22366, packageName=com.crunchyroll.crunchyroid, versionCode=22366, versionName=3.76.0), AppInfo(enabled=true, longVersionCode=1792455080, packageName=com.disney.disneyplus, versionCode=1792455080, versionName=26.19.0+rc3-2026.10.20), AppInfo(enabled=true, longVersionCode=23081500, packageName=com.disney.starplus, versionCode=23081500, versionName=2.23.0-rc3), AppInfo(enabled=true, longVersionCode=9, packageName=com.gathin.tvhome, versionCode=9, versionName=3.0), AppInfo(enabled=true, longVersionCode=523, packageName=com.internet.tvbrowser, versionCode=523, versionName=2.18.3), AppInfo(enabled=true, longVersionCode=8135, packageName=com.jio.web.androidtv, versionCode=8135, versionName=8.1.3.5), AppInfo(enabled=true, longVersionCode=41048579, packageName=com.stremio.one, versionCode=41048579, versionName=1.11.3), AppInfo(enabled=true, longVersionCode=1827140069, packageName=com.wbd.stream, versionCode=1827140069, versionName=7.14.0.69), AppInfo(enabled=true, longVersionCode=13070109, packageName=org.videolan.vlc, versionCode=13070109, versionName=3.7.1)]
+10-26 01:07:15.728   704   914 I AppRecordManager: handleMessage # { when=-5ms what=23 obj=Bundle[{isOrdered=true, pid=4013, pkg=com.android.vending, uid=10012, using=true}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:15.728   704   914 I AppRecordTransition: noteBroadcastChanged uid = 10012 pid = 4013 pkg = com.android.vending isOrdered = true
+10-26 01:07:15.728   704   914 I AppRecordTransition: {"version":1,"processStateBM":{"pkg":"com.android.vending","uid":10012,"pid":4013,"bm":4}}
+10-26 01:07:15.729   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 3, package name is com.android.vending, bitMap is 4
+10-26 01:07:15.730  4013  4013 I Finsky  : [2] tjl - Received: android.intent.action.PACKAGE_CHANGED, [aPtlgRWRlPRV8hjplEfJLIkcOtp11EL4higrhP4qAGQ]
+10-26 01:07:15.736   704   757 I AppRecordManager: onUidStateChanged: uid=10012 procState=11 procStateSeq=0
+10-26 01:07:15.746  1621  1922 I katniss_interactor_PackageCache: Apps for Intent { act=android.intent.action.MAIN cat=[android.intent.category.LEANBACK_SETTINGS] }: [AppInfo(enabled=true, longVersionCode=1, packageName=com.android.tv.settings, versionCode=1, versionName=1.0), AppInfo(enabled=true, longVersionCode=1, packageName=com.android.tv.settings, versionCode=1, versionName=1.0)]
+10-26 01:07:15.759  1621  1922 I katniss_interactor_PackageCache: Apps for Intent { act=android.intent.action.MAIN cat=[android.intent.category.HOME] }: [AppInfo(enabled=true, longVersionCode=32, packageName=br.eddy.tvhome, versionCode=32, versionName=0.6.0), AppInfo(enabled=true, longVersionCode=9, packageName=com.gathin.tvhome, versionCode=9, versionName=3.0), AppInfo(enabled=true, longVersionCode=149, packageName=com.tcl.keycustomfunctionservice, versionCode=149, versionName=1.4.9), AppInfo(enabled=true, longVersionCode=1, packageName=com.android.tv.settings, versionCode=1, versionName=1.0)]
+10-26 01:07:15.763  1621  1922 I katniss_interactor_PackageCache: Apps for Intent { act=com.google.assistant.DATA_SHARING_CONSENT }: [AppInfo(enabled=true, longVersionCode=15040477, packageName=com.google.android.katniss, versionCode=15040477, versionName=7.55.87+964183260.01)]
+10-26 01:07:15.763  1621  1922 I katniss_interactor_PackageCache: Apps for experience type WATSON23: [AppInfo(enabled=true, longVersionCode=264131115, packageName=com.google.android.gms, versionCode=264131115, versionName=26.41.31 (180300-1002748488)), AppInfo(enabled=true, longVersionCode=530340320, packageName=com.google.android.youtube.tv, versionCode=530340320, versionName=5.30.340)]
+10-26 01:07:15.780   704   771 W Searchables: No web search activity found
+10-26 01:07:15.789  1446  3436 I Icing   : doRemovePackageData com.tcl.guard
+10-26 01:07:15.796  4013  4013 I Finsky  : [2] AIM: AppInfoCacheUpdater -> invalidating apps: [com.google.android.feedback]
+10-26 01:07:15.796  4013  4013 I Finsky  : [2] AIM: AppInfoManager-Perf > getApps > called for 1 apps
+10-26 01:07:15.798   704   778 I AppRecordManager: ReceivingBroadcast [1621, TclProcessAppRecord{1fb6433 0:com.google.android.katniss:interactor/u0a24}] isOrdered false
+10-26 01:07:15.798   704   778 I AppRecord: noteReceivingBroadcast: pkg=com.google.android.katniss pid = 1621 isOrdered false
+10-26 01:07:15.799   704   778 I AppRecordManager: ReceivingBroadcast [3757, TclProcessAppRecord{30363f0 0:com.google.android.katniss:search/u0a24}] isOrdered false
+10-26 01:07:15.799   704   778 I AppRecord: noteReceivingBroadcast: pkg=com.google.android.katniss pid = 3757 isOrdered false
+10-26 01:07:15.802  4013  4095 I Finsky  : [561] RECEIVER_PACKAGE_MONITOR#logWorkEndAndFinishGoAsync: SUCCESS
+10-26 01:07:15.804   704   850 I AppRecordManager: noteFinishReceivingBroadcast [4013, TclProcessAppRecord{fd2cf1c 0:com.android.vending/u0a12}] isOrdered true
+10-26 01:07:15.804   704   850 I AppRecord: noteFinishReceivingBroadcast: pkg=com.android.vending pid = 4013 isOrdered true
+10-26 01:07:15.804  4013   422 I Finsky  : [579] AIM: AppInfoManager-Perf > OnDeviceAppInfo > cacheHitCount=0, cacheMissCount=1. Missed  in cache (limit 10) : [com.google.android.feedback]
+10-26 01:07:15.805   704   850 I AppRecordManager: ReceivingBroadcast [635, TclProcessAppRecord{9a1e0fa 0:com.android.vending:background/u0a12}] isOrdered true
+10-26 01:07:15.805   704   850 I AppRecord: noteReceivingBroadcast: pkg=com.android.vending pid = 635 isOrdered true
+10-26 01:07:15.806   704   914 I AppRecordManager: handleMessage # { when=-7ms what=23 obj=Bundle[{isOrdered=false, pid=1621, pkg=com.google.android.katniss, uid=10024, using=true}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:15.806   704   914 I AppRecordTransition: noteBroadcastChanged uid = 10024 pid = 1621 pkg = com.google.android.katniss isOrdered = false
+10-26 01:07:15.806   704   914 I AppRecordTransition: {"version":1,"processStateBM":{"pkg":"com.google.android.katniss","uid":10024,"pid":1621,"bm":0}}
+10-26 01:07:15.806   704   914 I AppRecordManager: handleMessage # { when=-7ms what=23 obj=Bundle[{isOrdered=false, pid=3757, pkg=com.google.android.katniss, uid=10024, using=true}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:15.806   704   914 I AppRecordTransition: noteBroadcastChanged uid = 10024 pid = 3757 pkg = com.google.android.katniss isOrdered = false
+10-26 01:07:15.806   704   914 I AppRecordTransition: {"version":1,"processStateBM":{"pkg":"com.google.android.katniss","uid":10024,"pid":3757,"bm":0}}
+10-26 01:07:15.807   704   914 I AppRecordManager: handleMessage # { when=-3ms what=23 obj=Bundle[{isOrdered=true, pid=4013, pkg=com.android.vending, uid=10012, using=false}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:15.807   704   914 I AppRecordTransition: noteBroadcastChanged uid = 10012 pid = 4013 pkg = com.android.vending isOrdered = true
+10-26 01:07:15.807   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 3, package name is com.google.android.katniss, bitMap is 0
+10-26 01:07:15.807   704   914 I AppRecordTransition: {"version":1,"processStateBM":{"pkg":"com.android.vending","uid":10012,"pid":4013,"bm":4}}
+10-26 01:07:15.807   704   914 I AppRecordManager: handleMessage # { when=-2ms what=23 obj=Bundle[{isOrdered=true, pid=635, pkg=com.android.vending, uid=10012, using=true}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:15.807   704   914 I AppRecordTransition: noteBroadcastChanged uid = 10012 pid = 635 pkg = com.android.vending isOrdered = true
+10-26 01:07:15.807   704   914 I AppRecordTransition: {"version":1,"processStateBM":{"pkg":"com.android.vending","uid":10012,"pid":635,"bm":0}}
+10-26 01:07:15.807   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 3, package name is com.google.android.katniss, bitMap is 0
+10-26 01:07:15.808   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 3, package name is com.android.vending, bitMap is 4
+10-26 01:07:15.808   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 3, package name is com.android.vending, bitMap is 0
+10-26 01:07:15.810  4013   391 I Finsky  : [572] AIM: AppInfoManager-Perf > OnDeviceAppInfo > cacheHitCount=1, cacheMissCount=0. Missed  in cache (limit 10) : []
+10-26 01:07:15.810  4013   391 I Finsky  : [572] AIM: Got app ownership map. App counts: . Unique apps: 0
+10-26 01:07:15.811  4013   391 E Finsky  : [572] [Counters] attempted to use a non-positive increment for: 4752
+10-26 01:07:15.811  4013   391 I Finsky  : [572] AIM: Got app ownership map. App counts: . Unique apps: 0
+10-26 01:07:15.811  4013   391 E Finsky  : [572] [Counters] attempted to use a non-positive increment for: 4752
+10-26 01:07:15.812  4013   391 E Finsky  : [572] [Counters] attempted to use a non-positive increment for: 4753
+10-26 01:07:15.812  4013   391 E Finsky  : [572] [Counters] attempted to use a non-positive increment for: 4753
+10-26 01:07:15.814  3757  3806 I katniss_search_SystemSearchableSources: createSources
+10-26 01:07:15.815  1621  1918 I katniss_interactor_SystemSearchableSources: createSources
+10-26 01:07:15.817   635   635 I Finsky:background: [2] tja - Received: android.intent.action.PACKAGE_CHANGED, [aPtlgRWRlPRV8hjplEfJLIkcOtp11EL4higrhP4qAGQ]
+10-26 01:07:15.850  1621  1829 I katniss_interactor_SystemSearchableSources:  com.jio.web.androidtv/org.chromium.chrome.browser.document.ChromeLauncherActivity has bad suggestion authority {{manifest_package}}.GLOBALSEARCH
+10-26 01:07:15.850  1621  1829 I katniss_interactor_SystemSearchableSources: Not using source null
+10-26 01:07:15.853  1621  1829 I katniss_interactor_SystemSearchableSources:  com.jio.web.androidtv/com.google.android.apps.chrome.IntentDispatcher has bad suggestion authority com.jio.web.GLOBALSEARCH
+10-26 01:07:15.853  1621  1829 I katniss_interactor_SystemSearchableSources: Not using source null
+10-26 01:07:15.854  3757  3814 I katniss_search_SystemSearchableSources:  com.jio.web.androidtv/org.chromium.chrome.browser.document.ChromeLauncherActivity has bad suggestion authority {{manifest_package}}.GLOBALSEARCH
+10-26 01:07:15.854  3757  3814 I katniss_search_SystemSearchableSources: Not using source null
+10-26 01:07:15.855  3757  3814 I katniss_search_SystemSearchableSources:  com.jio.web.androidtv/com.google.android.apps.chrome.IntentDispatcher has bad suggestion authority com.jio.web.GLOBALSEARCH
+10-26 01:07:15.855  3757  3814 I katniss_search_SystemSearchableSources: Not using source null
+10-26 01:07:15.868  1621  1918 I katniss_interactor_SystemSearchableSources:  com.jio.web.androidtv/org.chromium.chrome.browser.document.ChromeLauncherActivity has bad suggestion authority {{manifest_package}}.GLOBALSEARCH
+10-26 01:07:15.868  1621  1918 I katniss_interactor_SystemSearchableSources: Not using source null
+10-26 01:07:15.870  3757  3806 I katniss_search_SystemSearchableSources:  com.jio.web.androidtv/org.chromium.chrome.browser.document.ChromeLauncherActivity has bad suggestion authority {{manifest_package}}.GLOBALSEARCH
+10-26 01:07:15.870  3757  3806 I katniss_search_SystemSearchableSources: Not using source null
+10-26 01:07:15.875  3757  3806 I katniss_search_SystemSearchableSources:  com.jio.web.androidtv/com.google.android.apps.chrome.IntentDispatcher has bad suggestion authority com.jio.web.GLOBALSEARCH
+10-26 01:07:15.876  3757  3806 I katniss_search_SystemSearchableSources: Not using source null
+10-26 01:07:15.877  1621  1918 I katniss_interactor_SystemSearchableSources:  com.jio.web.androidtv/com.google.android.apps.chrome.IntentDispatcher has bad suggestion authority com.jio.web.GLOBALSEARCH
+10-26 01:07:15.877  1621  1918 I katniss_interactor_SystemSearchableSources: Not using source null
+10-26 01:07:15.897   635  1037 I Finsky:background: [588] RECEIVER_PACKAGE_MONITOR_BACKGROUND#logWorkEndAndFinishGoAsync: SUCCESS
+10-26 01:07:15.900   704  1159 I AppRecordManager: noteFinishReceivingBroadcast [635, TclProcessAppRecord{75c6368 0:com.android.vending:background/u0a12}] isOrdered true
+10-26 01:07:15.900   704  1159 I AppRecord: noteFinishReceivingBroadcast: pkg=com.android.vending pid = 635 isOrdered true
+10-26 01:07:15.901   704   914 I AppRecordManager: handleMessage # { when=-1ms what=23 obj=Bundle[{isOrdered=true, pid=635, pkg=com.android.vending, uid=10012, using=false}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:15.901   704   914 I AppRecordTransition: noteBroadcastChanged uid = 10012 pid = 635 pkg = com.android.vending isOrdered = true
+10-26 01:07:15.901   704   914 I AppRecordTransition: {"version":1,"processStateBM":{"pkg":"com.android.vending","uid":10012,"pid":635,"bm":0}}
+10-26 01:07:15.901   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 3, package name is com.android.vending, bitMap is 0
+10-26 01:07:15.902   704  1159 I AppRecordManager: ReceivingBroadcast [635, TclProcessAppRecord{45d6c26 0:com.android.vending:background/u0a12}] isOrdered true
+10-26 01:07:15.902   704  1159 I AppRecord: noteReceivingBroadcast: pkg=com.android.vending pid = 635 isOrdered true
+10-26 01:07:15.903   704   914 I AppRecordManager: handleMessage # { when=0 what=23 obj=Bundle[{isOrdered=true, pid=635, pkg=com.android.vending, uid=10012, using=true}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:15.903   704   914 I AppRecordTransition: noteBroadcastChanged uid = 10012 pid = 635 pkg = com.android.vending isOrdered = true
+10-26 01:07:15.903   704   914 I AppRecordTransition: {"version":1,"processStateBM":{"pkg":"com.android.vending","uid":10012,"pid":635,"bm":0}}
+10-26 01:07:15.905   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 3, package name is com.android.vending, bitMap is 0
+10-26 01:07:15.913  2104  2104 V GoogleTVCustomer: :---->onPackageChanged:com.tcl.guard
+10-26 01:07:15.915   635  1015 I Finsky:background: [579] RECEIVER_ENGAGE_PACKAGE_CHANGED#logWorkEndAndFinishGoAsync: SUCCESS
+10-26 01:07:15.917   704   849 I AppRecordManager: noteFinishReceivingBroadcast [635, TclProcessAppRecord{e1ed067 0:com.android.vending:background/u0a12}] isOrdered true
+10-26 01:07:15.917   704   849 I AppRecord: noteFinishReceivingBroadcast: pkg=com.android.vending pid = 635 isOrdered true
+10-26 01:07:15.918   704   914 I AppRecordManager: handleMessage # { when=-1ms what=23 obj=Bundle[{isOrdered=true, pid=635, pkg=com.android.vending, uid=10012, using=false}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:15.918   704   914 I AppRecordTransition: noteBroadcastChanged uid = 10012 pid = 635 pkg = com.android.vending isOrdered = true
+10-26 01:07:15.918   704   914 I AppRecordTransition: {"version":1,"processStateBM":{"pkg":"com.android.vending","uid":10012,"pid":635,"bm":0}}
+10-26 01:07:15.918   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 3, package name is com.android.vending, bitMap is 0
+10-26 01:07:15.919   704   849 I AppRecordManager: ReceivingBroadcast [1446, TclProcessAppRecord{70b86bd 0:com.google.android.gms/u0a21}] isOrdered true
+10-26 01:07:15.919   704   849 I AppRecord: noteReceivingBroadcast: pkg=com.google.android.gms pid = 1446 isOrdered true
+10-26 01:07:15.919   704   914 I AppRecordManager: handleMessage # { when=0 what=23 obj=Bundle[{isOrdered=true, pid=1446, pkg=com.google.android.gms, uid=10021, using=true}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:15.919   704   914 I AppRecordTransition: noteBroadcastChanged uid = 10021 pid = 1446 pkg = com.google.android.gms isOrdered = true
+10-26 01:07:15.920   704   914 I AppRecordTransition: {"version":1,"processStateBM":{"pkg":"com.google.android.gms","uid":10021,"pid":1446,"bm":4}}
+10-26 01:07:15.920   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 3, package name is com.google.android.gms, bitMap is 4
+10-26 01:07:15.928  4013  4013 I Finsky  : [2] Memory trim requested to level 80
+10-26 01:07:15.928  4013  4013 I Finsky  : [2] Flushing in-memory image cache
+10-26 01:07:15.929   635   635 I Finsky:background: [2] Memory trim requested to level 80
+10-26 01:07:15.930   704   757 I AppRecordManager: onUidStateChanged: uid=10012 procState=15 procStateSeq=0
+10-26 01:07:15.931   704  1844 D ResourceManagerService: onBringUpService com.google.android.gms, cn=ComponentInfo{com.google.android.gms/com.google.android.gms.chimera.GmsIntentOperationService}
+10-26 01:07:15.935   704   849 I AppRecordManager: noteFinishReceivingBroadcast [1446, TclProcessAppRecord{62424b2 0:com.google.android.gms/u0a21}] isOrdered true
+10-26 01:07:15.935   704   849 I AppRecord: noteFinishReceivingBroadcast: pkg=com.google.android.gms pid = 1446 isOrdered true
+10-26 01:07:15.936   704   914 I AppRecordManager: handleMessage # { when=0 what=23 obj=Bundle[{isOrdered=true, pid=1446, pkg=com.google.android.gms, uid=10021, using=false}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:15.936   704   914 I AppRecordTransition: noteBroadcastChanged uid = 10021 pid = 1446 pkg = com.google.android.gms isOrdered = true
+10-26 01:07:15.936   704   914 I AppRecordTransition: {"version":1,"processStateBM":{"pkg":"com.google.android.gms","uid":10021,"pid":1446,"bm":4}}
+10-26 01:07:15.936   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 3, package name is com.google.android.gms, bitMap is 4
+10-26 01:07:15.937   704   849 I AppRecordManager: ReceivingBroadcast [3120, TclProcessAppRecord{3663780 0:com.tcl.overseasappshow/1000}] isOrdered true
+10-26 01:07:15.937   704   849 I AppRecord: noteReceivingBroadcast: pkg=com.tcl.overseasappshow pid = 3120 isOrdered true
+10-26 01:07:15.938   704   914 I AppRecordManager: handleMessage # { when=0 what=23 obj=Bundle[{isOrdered=true, pid=3120, pkg=com.tcl.overseasappshow, uid=1000, using=true}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:15.938   704   914 I AppRecordTransition: noteBroadcastChanged uid = 1000 pid = 3120 pkg = com.tcl.overseasappshow isOrdered = true
+10-26 01:07:15.938   704   914 I AppRecordTransition: {"version":1,"processStateBM":{"pkg":"com.tcl.overseasappshow","uid":1000,"pid":3120,"bm":20}}
+10-26 01:07:15.939   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 3, package name is com.tcl.overseasappshow, bitMap is 20
+10-26 01:07:15.945  3120  3120 D com.tcl.overseasappshow.receiver.PackageChangedReceiver: onReceive packageName: com.google.android.feedback android.intent.action.PACKAGE_CHANGED
+10-26 01:07:15.952   704  1843 D ResourceManagerService: onBringUpService com.google.android.gms, cn=ComponentInfo{com.google.android.gms/com.google.android.gms.chimera.GmsIntentOperationService}
+10-26 01:07:15.954   704  1844 D ResourceManagerService: onBringUpService com.google.android.gms, cn=ComponentInfo{com.google.android.gms/com.google.android.gms.icing.service.IndexWorkerService}
+10-26 01:07:15.959   704   849 D ResourceManagerService: onBringUpService com.google.android.gms, cn=ComponentInfo{com.google.android.gms/com.google.android.gms.icing.service.IndexWorkerService}
+10-26 01:07:15.960   704  1731 I AppRecordManager: noteFinishReceivingBroadcast [3120, TclProcessAppRecord{52bd9fe 0:com.tcl.overseasappshow/1000}] isOrdered true
+10-26 01:07:15.960   704  1731 I AppRecord: noteFinishReceivingBroadcast: pkg=com.tcl.overseasappshow pid = 3120 isOrdered true
+10-26 01:07:15.961   704   914 I AppRecordManager: handleMessage # { when=-1ms what=23 obj=Bundle[{isOrdered=true, pid=3120, pkg=com.tcl.overseasappshow, uid=1000, using=false}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:15.961   704   914 I AppRecordTransition: noteBroadcastChanged uid = 1000 pid = 3120 pkg = com.tcl.overseasappshow isOrdered = true
+10-26 01:07:15.961   704   914 I AppRecordTransition: {"version":1,"processStateBM":{"pkg":"com.tcl.overseasappshow","uid":1000,"pid":3120,"bm":20}}
+10-26 01:07:15.961   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 3, package name is com.tcl.overseasappshow, bitMap is 20
+10-26 01:07:15.970   635  1034 I Finsky:background: [586] Wrote row to frosting DB: 30448
+10-26 01:07:15.989  1446  3436 I Icing   : doRemovePackageData com.google.android.feedback
+10-26 01:07:15.999   900  1117 D TCastPublishOverUdp: b1cf986@sendOnline
+10-26 01:07:16.002   704   771 W TextServicesManagerService: no available spell checker services found
+10-26 01:07:16.010  4013   422 I Finsky  : [579] AIM: AppInfoManager-Perf > ItemModel > CacheSize=34, cacheHitCount=0, cacheMissCount=0, total appsWithNoServerDataCount=0. Missed  in cache (limit 10) : []
+10-26 01:07:16.011  4013   422 I Finsky  : [579] AIM: AppInfoManager-Perf > ItemModel > CacheSize=34, cacheHitCount=0, cacheMissCount=0, total appsWithNoServerDataCount=0. Missed  in cache (limit 10) : []
+10-26 01:07:16.030  3757  3815 I katniss_search_PackageCache: Apps for Intent { act=android.intent.action.MAIN cat=[android.intent.category.LEANBACK_LAUNCHER] }: [AppInfo(enabled=true, longVersionCode=1, packageName=com.android.tv.settings, versionCode=1, versionName=1.0), AppInfo(enabled=true, longVersionCode=85341708, packageName=com.android.vending, versionCode=85341708, versionName=53.4.17-24 [8] [PR] 988500596), AppInfo(enabled=true, longVersionCode=530340320, packageName=com.google.android.youtube.tv, versionCode=530340320, versionName=5.30.340), AppInfo(enabled=true, longVersionCode=112007300, packageName=com.google.android.youtube.tvmusic, versionCode=112007300, versionName=1.12.07), AppInfo(enabled=true, longVersionCode=10000, packageName=com.tcl.tv, versionCode=10000, versionName=1.00.00_593330c_220516), AppInfo(enabled=true, longVersionCode=606024120, packageName=com.amazon.amazonvideo.livingroom, versionCode=606024120, versionName=6.24.12+v16.0.1.23-allAbis), AppInfo(enabled=true, longVersionCode=708365470, packageName=com.google.android.play.games, versionCode=708365470, versionName=2026.10.70836 (1002888414.1002888414-040700)), AppInfo(enabled=true, longVersionCode=44015257, packageName=com.google.android.videos, versionCode=44015257, versionName=4.40.15.23-tv), AppInfo(enabled=true, longVersionCode=12041, packageName=com.netflix.ninja, versionCode=12041, versionName=8.3.11 build 12041), AppInfo(enabled=true, longVersionCode=20402781, packageName=com.tcl.MultiScreenInteraction_TV, versionCode=20402781, versionName=4.2.781), AppInfo(enabled=true, longVersionCode=1020020, packageName=com.tcl.notereminder, versionCode=1020020, versionName=1.02.0020), AppInfo(enabled=true, longVersionCode=947, packageName=com.tcl.partnercustomizer, versionCode=947, versionName=9.47.gl.e75c913), AppInfo(enabled=true, longVersionCode=10023, packageName=com.tcl.tv.tclhome_master, versionCode=10023, versionName=1.0.2.3), AppInfo(enabled=true, longVersionCode=600000065, packageName=com.tcl.ui_mediaCenter, versionCode=600000065, versionName=6.00.65), AppInfo(enabled=true, longVersionCode=905100003, packageName=ar.com.flow.androidtv, versionCode=905100003, versionName=4.110.3), AppInfo(enabled=true, longVersionCode=32, packageName=br.eddy.tvhome, versionCode=32, versionName=0.6.0), AppInfo(enabled=true, longVersionCode=520000962, packageName=com.cbs.ca, versionCode=520000962, versionName=17.2.0), AppInfo(enabled=true, longVersionCode=22366, packageName=com.crunchyroll.crunchyroid, versionCode=22366, versionName=3.76.0), AppInfo(enabled=true, longVersionCode=1792455080, packageName=com.disney.disneyplus, versionCode=1792455080, versionName=26.19.0+rc3-2026.10.20), AppInfo(enabled=true, longVersionCode=23081500, packageName=com.disney.starplus, versionCode=23081500, versionName=2.23.0-rc3), AppInfo(enabled=true, longVersionCode=9, packageName=com.gathin.tvhome, versionCode=9, versionName=3.0), AppInfo(enabled=true, longVersionCode=523, packageName=com.internet.tvbrowser, versionCode=523, versionName=2.18.3), AppInfo(enabled=true, longVersionCode=8135, packageName=com.jio.web.androidtv, versionCode=8135, versionName=8.1.3.5), AppInfo(enabled=true, longVersionCode=41048579, packageName=com.stremio.one, versionCode=41048579, versionName=1.11.3), AppInfo(enabled=true, longVersionCode=1827140069, packageName=com.wbd.stream, versionCode=1827140069, versionName=7.14.0.69), AppInfo(enabled=true, longVersionCode=13070109, packageName=org.videolan.vlc, versionCode=13070109, versionName=3.7.1)]
+10-26 01:07:16.033   635  1034 I Finsky:background: [586] Wrote row to frosting DB: 30449
+10-26 01:07:16.044  3757  3815 I katniss_search_PackageCache: Apps for Intent { act=android.intent.action.MAIN cat=[android.intent.category.LEANBACK_SETTINGS] }: [AppInfo(enabled=true, longVersionCode=1, packageName=com.android.tv.settings, versionCode=1, versionName=1.0), AppInfo(enabled=true, longVersionCode=1, packageName=com.android.tv.settings, versionCode=1, versionName=1.0)]
+10-26 01:07:16.046  4013   415 I Finsky  : [576] AIM: AppInfoManager-Perf > getApps > data collection finished
+10-26 01:07:16.046  4013   415 I Finsky  : [576] AIM: AppInfoManager-Perf > maybeDestroyAppInfoManager is called. actives = 0
+10-26 01:07:16.050  3757  3815 I katniss_search_PackageCache: Apps for Intent { act=android.intent.action.MAIN cat=[android.intent.category.HOME] }: [AppInfo(enabled=true, longVersionCode=32, packageName=br.eddy.tvhome, versionCode=32, versionName=0.6.0), AppInfo(enabled=true, longVersionCode=9, packageName=com.gathin.tvhome, versionCode=9, versionName=3.0), AppInfo(enabled=true, longVersionCode=149, packageName=com.tcl.keycustomfunctionservice, versionCode=149, versionName=1.4.9), AppInfo(enabled=true, longVersionCode=1, packageName=com.android.tv.settings, versionCode=1, versionName=1.0)]
+10-26 01:07:16.054  3757  3815 I katniss_search_PackageCache: Apps for Intent { act=com.google.assistant.DATA_SHARING_CONSENT }: [AppInfo(enabled=true, longVersionCode=15040477, packageName=com.google.android.katniss, versionCode=15040477, versionName=7.55.87+964183260.01)]
+10-26 01:07:16.054  3757  3815 I katniss_search_PackageCache: Apps for experience type WATSON23: [AppInfo(enabled=true, longVersionCode=264131115, packageName=com.google.android.gms, versionCode=264131115, versionName=26.41.31 (180300-1002748488)), AppInfo(enabled=true, longVersionCode=530340320, packageName=com.google.android.youtube.tv, versionCode=530340320, versionName=5.30.340)]
+10-26 01:07:16.055   704   771 W Searchables: No web search activity found
+10-26 01:07:16.065   704   778 I AppRecordManager: ReceivingBroadcast [1621, TclProcessAppRecord{88b655f 0:com.google.android.katniss:interactor/u0a24}] isOrdered false
+10-26 01:07:16.065   704   778 I AppRecord: noteReceivingBroadcast: pkg=com.google.android.katniss pid = 1621 isOrdered false
+10-26 01:07:16.066   704   914 I AppRecordManager: handleMessage # { when=0 what=23 obj=Bundle[{isOrdered=false, pid=1621, pkg=com.google.android.katniss, uid=10024, using=true}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:16.066   704   914 I AppRecordTransition: noteBroadcastChanged uid = 10024 pid = 1621 pkg = com.google.android.katniss isOrdered = false
+10-26 01:07:16.066  1621  1918 I katniss_interactor_SystemSearchableSources: createSources
+10-26 01:07:16.066   704   914 I AppRecordTransition: {"version":1,"processStateBM":{"pkg":"com.google.android.katniss","uid":10024,"pid":1621,"bm":0}}
+10-26 01:07:16.067   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 3, package name is com.google.android.katniss, bitMap is 0
+10-26 01:07:16.067   704   778 I AppRecordManager: ReceivingBroadcast [3757, TclProcessAppRecord{2b74bac 0:com.google.android.katniss:search/u0a24}] isOrdered false
+10-26 01:07:16.067  3757  3806 I katniss_search_SystemSearchableSources: createSources
+10-26 01:07:16.067   704   778 I AppRecord: noteReceivingBroadcast: pkg=com.google.android.katniss pid = 3757 isOrdered false
+10-26 01:07:16.067   704   914 I AppRecordManager: handleMessage # { when=0 what=23 obj=Bundle[{isOrdered=false, pid=3757, pkg=com.google.android.katniss, uid=10024, using=true}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:16.067   704   914 I AppRecordTransition: noteBroadcastChanged uid = 10024 pid = 3757 pkg = com.google.android.katniss isOrdered = false
+10-26 01:07:16.067   704   914 I AppRecordTransition: {"version":1,"processStateBM":{"pkg":"com.google.android.katniss","uid":10024,"pid":3757,"bm":0}}
+10-26 01:07:16.068   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 3, package name is com.google.android.katniss, bitMap is 0
+10-26 01:07:16.092   704   771 W Searchables: No web search activity found
+10-26 01:07:16.095   704   880 E WifiVendorHal: getWifiLinkLayerStats_1_3_Internal(l.978) failed {.code = ERROR_NOT_SUPPORTED, .description = }
+10-26 01:07:16.113   704   756 I RoleManagerService: Granting default roles...
+10-26 01:07:16.120  3989  4077 W Role    : Cannot get ApplicationInfo for default holder: com.android.messaging
+10-26 01:07:16.128   704   778 I AppRecordManager: ReceivingBroadcast [1621, TclProcessAppRecord{9256444 0:com.google.android.katniss:interactor/u0a24}] isOrdered false
+10-26 01:07:16.128   704   778 I AppRecord: noteReceivingBroadcast: pkg=com.google.android.katniss pid = 1621 isOrdered false
+10-26 01:07:16.128   704   914 I AppRecordManager: handleMessage # { when=0 what=23 obj=Bundle[{isOrdered=false, pid=1621, pkg=com.google.android.katniss, uid=10024, using=true}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:16.128   704   914 I AppRecordTransition: noteBroadcastChanged uid = 10024 pid = 1621 pkg = com.google.android.katniss isOrdered = false
+10-26 01:07:16.128   704   778 I AppRecordManager: ReceivingBroadcast [3757, TclProcessAppRecord{a10992d 0:com.google.android.katniss:search/u0a24}] isOrdered false
+10-26 01:07:16.128   704   778 I AppRecord: noteReceivingBroadcast: pkg=com.google.android.katniss pid = 3757 isOrdered false
+10-26 01:07:16.128   704   914 I AppRecordTransition: {"version":1,"processStateBM":{"pkg":"com.google.android.katniss","uid":10024,"pid":1621,"bm":0}}
+10-26 01:07:16.128   704   914 I AppRecordManager: handleMessage # { when=0 what=23 obj=Bundle[{isOrdered=false, pid=3757, pkg=com.google.android.katniss, uid=10024, using=true}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:16.128   704   914 I AppRecordTransition: noteBroadcastChanged uid = 10024 pid = 3757 pkg = com.google.android.katniss isOrdered = false
+10-26 01:07:16.129  3757  3814 I katniss_search_SystemSearchableSources: createSources
+10-26 01:07:16.129   704   914 I AppRecordTransition: {"version":1,"processStateBM":{"pkg":"com.google.android.katniss","uid":10024,"pid":3757,"bm":0}}
+10-26 01:07:16.129  1621  1829 I katniss_interactor_SystemSearchableSources: createSources
+10-26 01:07:16.130   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 3, package name is com.google.android.katniss, bitMap is 0
+10-26 01:07:16.130   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 3, package name is com.google.android.katniss, bitMap is 0
+10-26 01:07:16.134  3757  3806 I katniss_search_SystemSearchableSources:  com.jio.web.androidtv/org.chromium.chrome.browser.document.ChromeLauncherActivity has bad suggestion authority {{manifest_package}}.GLOBALSEARCH
+10-26 01:07:16.134  3757  3806 I katniss_search_SystemSearchableSources: Not using source null
+10-26 01:07:16.135  3757  3806 I katniss_search_SystemSearchableSources:  com.jio.web.androidtv/com.google.android.apps.chrome.IntentDispatcher has bad suggestion authority com.jio.web.GLOBALSEARCH
+10-26 01:07:16.135  3757  3806 I katniss_search_SystemSearchableSources: Not using source null
+10-26 01:07:16.139  1621  1918 I katniss_interactor_SystemSearchableSources:  com.jio.web.androidtv/org.chromium.chrome.browser.document.ChromeLauncherActivity has bad suggestion authority {{manifest_package}}.GLOBALSEARCH
+10-26 01:07:16.139  1621  1918 I katniss_interactor_SystemSearchableSources: Not using source null
+10-26 01:07:16.140  1621  1918 I katniss_interactor_SystemSearchableSources:  com.jio.web.androidtv/com.google.android.apps.chrome.IntentDispatcher has bad suggestion authority com.jio.web.GLOBALSEARCH
+10-26 01:07:16.140  1621  1918 I katniss_interactor_SystemSearchableSources: Not using source null
+10-26 01:07:16.143  2104  2104 V GoogleTVCustomer: :---->onPackageChanged:com.google.android.feedback
+10-26 01:07:16.143  3989  4077 W Role    : Cannot get ApplicationInfo for default holder: com.android.gallery3d
+10-26 01:07:16.146  3989  4077 W Role    : Cannot find resource for default holder: config_systemActivityRecognizer
+10-26 01:07:16.165  1621  1829 I katniss_interactor_SystemSearchableSources:  com.jio.web.androidtv/org.chromium.chrome.browser.document.ChromeLauncherActivity has bad suggestion authority {{manifest_package}}.GLOBALSEARCH
+10-26 01:07:16.166  1621  1829 I katniss_interactor_SystemSearchableSources: Not using source null
+10-26 01:07:16.167  1621  1829 I katniss_interactor_SystemSearchableSources:  com.jio.web.androidtv/com.google.android.apps.chrome.IntentDispatcher has bad suggestion authority com.jio.web.GLOBALSEARCH
+10-26 01:07:16.167  1621  1829 I katniss_interactor_SystemSearchableSources: Not using source null
+10-26 01:07:16.175  3757  3814 I katniss_search_SystemSearchableSources:  com.jio.web.androidtv/org.chromium.chrome.browser.document.ChromeLauncherActivity has bad suggestion authority {{manifest_package}}.GLOBALSEARCH
+10-26 01:07:16.176  3757  3814 I katniss_search_SystemSearchableSources: Not using source null
+10-26 01:07:16.176  3757  3814 I katniss_search_SystemSearchableSources:  com.jio.web.androidtv/com.google.android.apps.chrome.IntentDispatcher has bad suggestion authority com.jio.web.GLOBALSEARCH
+10-26 01:07:16.176  3757  3814 I katniss_search_SystemSearchableSources: Not using source null
+10-26 01:07:17.983  1446  1446 D BoundBrokerSvc: onUnbind: Intent { act=com.google.android.gms.safetynet.service.START pkg=com.google.android.gms }
+10-26 01:07:19.112   704   880 E WifiVendorHal: getWifiLinkLayerStats_1_3_Internal(l.978) failed {.code = ERROR_NOT_SUPPORTED, .description = }
+10-26 01:07:19.485   704   928 W TclActivityManagerService: sikp freeze pkg:ProcessRecord{2de0248 3989:com.google.android.permissioncontroller/u0a108} [service] is need by ProcessRecord{634c0ee 493:com.google.android.backdrop/u0a41} or start by system
+10-26 01:07:21.314  4013  4013 I Finsky  : [2] setup::RES: shouldRecoverRestoredPackages: versionCodeSystem 82806208
+10-26 01:07:21.323  4013  4013 I Finsky  : [2] Detected restoreservicev2://recovery not needed, will not run
+10-26 01:07:21.367  4013  1244 I Finsky  : [623] registerListener
+10-26 01:07:21.374  4013  1244 I Finsky  : [623] DSC: queryDownloads()
+10-26 01:07:21.389   635  1037 I Finsky:background: [588] DS: queryDownloads()
+10-26 01:07:21.401   900  1117 D TCastPublishOverUdp: b1cf986@sendOnline
+10-26 01:07:21.414  4013  1244 I Finsky  : [623] Initialized AssetModuleDownloader.
+10-26 01:07:22.131   704   880 E WifiVendorHal: getWifiLinkLayerStats_1_3_Internal(l.978) failed {.code = ERROR_NOT_SUPPORTED, .description = }
+10-26 01:07:19.485   704   928 W TclActivityManagerService: sikp freeze pkg:ProcessRecord{2de0248 3989:com.google.android.permissioncontroller/u0a108} [service] is need by ProcessRecord{634c0ee 493:com.google.android.backdrop/u0a41} or start by system
+10-26 01:07:24.426   704   928 D FreezeManager: before doFreeze 705 pro com.google.process.gapps
+10-26 01:07:24.426   704   928 D Process : doFreeze success for 705
+10-26 01:07:24.426   704   928 D FreezeManager: doFreeze 705 pro com.google.process.gapps res true
+10-26 01:07:24.428   704   928 I AppRecord: noteFreezeStateChange: pid = 705, pkg: com.google.process.gapps, isFreeze: true
+10-26 01:07:24.428   704   914 I AppRecordManager: handleMessage # { when=0 what=9 obj=Bundle[{isFreeze=true, pid=705, pkg=com.google.process.gapps}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:24.428   704   914 I AppRecordTransition: noteFreezeStateChange  packageName = com.google.process.gapps isFreeze = true
+10-26 01:07:24.428   704   930 D freeze  : recv from kernel: tag 5 buf [PID 705][BUSY 0] 
+10-26 01:07:24.428   704   930 D freeze  : recv from kernel: tag 5 pid is 705 state 0 
+10-26 01:07:24.428   704   930 D Process : freeze state is 5 pid is 705 ohter is 0
+10-26 01:07:24.429   704   914 I AppRecordTransition: {"version":1,"appStateBM":{"pkg":"com.google.process.gapps","uid":-1,"pid":-1,"bm":8}}
+10-26 01:07:24.430   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 4, package name is com.google.process.gapps, bitMap is 8
+10-26 01:07:24.691   704   778 I AppRecordManager: ReceivingBroadcast [704, TclProcessAppRecord{54c95c5 0:system/1000}] isOrdered true
+10-26 01:07:24.691   704   778 I AppRecord: noteReceivingBroadcast: pkg=android pid = 704 isOrdered true
+10-26 01:07:24.691   704   914 I AppRecordManager: handleMessage # { when=0 what=23 obj=Bundle[{isOrdered=true, pid=704, pkg=android, uid=1000, using=true}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:24.691   704   914 I AppRecordTransition: noteBroadcastChanged uid = 1000 pid = 704 pkg = android isOrdered = true
+10-26 01:07:24.719   704   876 I TclTraffic: schedulePerformPoll mTracing=falsecom.android.server.am.apprecord.TclTrafficMonitor@a698427
+10-26 01:07:24.719   704   876 E Traffic : performPollLocked:java.lang.Throwable
+10-26 01:07:24.719   704  1041 I TclTraffic: updateUidsTraffic before size=4
+10-26 01:07:24.720   704  1041 I TclTraffic: updateUidsTraffic after size=4
+10-26 01:07:24.722   704   876 I AppRecordManager: noteFinishReceivingBroadcast [704, TclProcessAppRecord{29bfb1a 0:system/1000}] isOrdered true
+10-26 01:07:24.722   704   876 I AppRecord: noteFinishReceivingBroadcast: pkg=android pid = 704 isOrdered true
+10-26 01:07:24.722   704   914 I AppRecordManager: handleMessage # { when=0 what=23 obj=Bundle[{isOrdered=true, pid=704, pkg=android, uid=1000, using=false}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:24.722   704   914 I AppRecordTransition: noteBroadcastChanged uid = 1000 pid = 704 pkg = android isOrdered = true
+10-26 01:07:24.728   704   930 D freeze  : recv from kernel: tag 6 buf [PID 704 CALLED][PID 705] 
+10-26 01:07:24.728   704   930 D freeze  : recv from kernel: tag 6 binder from 704 to 705
+10-26 01:07:24.729   704   930 D Process : freeze state is 6 pid is 705 ohter is 704
+10-26 01:07:24.730   704   930 I AppRecord: noteFreezeStateChange: pid = 705, pkg: com.google.process.gapps, isFreeze: false
+10-26 01:07:24.731   704   914 I AppRecordManager: handleMessage # { when=0 what=9 obj=Bundle[{isFreeze=false, pid=705, pkg=com.google.process.gapps}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:24.731   704   914 I AppRecordTransition: noteFreezeStateChange  packageName = com.google.process.gapps isFreeze = false
+10-26 01:07:24.732   704   914 I AppRecordTransition: {"version":1,"appStateBM":{"pkg":"com.google.process.gapps","uid":-1,"pid":-1,"bm":0}}
+10-26 01:07:24.732   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 4, package name is com.google.process.gapps, bitMap is 0
+10-26 01:07:24.735   704   772 I AppRecord: notePSSChanged: uid = 10108, pid = 3989
+10-26 01:07:24.735   704   914 I AppRecordManager: handleMessage # { when=0 what=7 obj=Bundle[{pid=3989, uid=10108}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:24.735   704   914 I AppRecordTransition: {"version":1,"pssUpdate":{"pkg":"com.google.android.permissioncontroller","uid":10108,"pid":3989,"pss":14657}}
+10-26 01:07:24.736   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 5, package name is com.google.android.permissioncontroller, bitMap is -1
+10-26 01:07:24.736   704   914 I AppRecordTransition: notePSSChanged + uid = 10108 pid = 3989pss = 14657
+10-26 01:07:24.736   704   778 I AppRecordManager: ReceivingBroadcast [704, TclProcessAppRecord{308064b 0:system/1000}] isOrdered false
+10-26 01:07:24.736   704   778 I AppRecord: noteReceivingBroadcast: pkg=android pid = 704 isOrdered false
+10-26 01:07:24.736   704   914 I AppRecordManager: handleMessage # { when=-1ms what=23 obj=Bundle[{isOrdered=false, pid=704, pkg=android, uid=1000, using=true}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:24.736   704   914 I AppRecordTransition: noteBroadcastChanged uid = 1000 pid = 704 pkg = android isOrdered = false
+10-26 01:07:24.745   704   772 I AppRecord: notePSSChanged: uid = 10021, pid = 705
+10-26 01:07:24.745   704   914 I AppRecordManager: handleMessage # { when=-1ms what=7 obj=Bundle[{pid=705, uid=10021}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:24.746   704   914 I AppRecordTransition: {"version":1,"pssUpdate":{"pkg":"com.google.android.gsf","uid":10021,"pid":705,"pss":9082}}
+10-26 01:07:24.746   704   914 I AppRecordTransition: notePSSChanged + uid = 10021 pid = 705pss = 9082
+10-26 01:07:24.746   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 5, package name is com.google.android.gsf, bitMap is -1
+10-26 01:07:24.758   704   772 I AppRecord: notePSSChanged: uid = 10021, pid = 475
+10-26 01:07:24.758   704   914 I AppRecordManager: handleMessage # { when=0 what=7 obj=Bundle[{pid=475, uid=10021}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:24.758   704   914 I AppRecordTransition: {"version":1,"pssUpdate":{"pkg":"com.google.android.gsf","uid":10021,"pid":475,"pss":8781}}
+10-26 01:07:24.758   704   914 I AppRecordTransition: notePSSChanged + uid = 10021 pid = 475pss = 8781
+10-26 01:07:24.759   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 5, package name is com.google.android.gsf, bitMap is -1
+10-26 01:07:25.143   704   880 E WifiVendorHal: getWifiLinkLayerStats_1_3_Internal(l.978) failed {.code = ERROR_NOT_SUPPORTED, .description = }
+10-26 01:07:25.134  1446  1446 W ThreadPoolForeg: type=1400 audit(0.0:970): avc: denied { write } for name="traced_producer" dev="tmpfs" ino=12776 scontext=u:r:gmscore_app:s0:c512,c768 tcontext=u:object_r:traced_producer_socket:s0 tclass=sock_file permissive=0 app=com.google.android.gms
+10-26 01:07:26.803   900  1117 D TCastPublishOverUdp: b1cf986@sendOnline
+10-26 01:07:27.398   934  1071 D TGuardMemoryManagerMemoryStrategy: getStrategy, type is POLLING_CLEAN_EVENT,interval(ms) = 30000
+10-26 01:07:27.398   934  1071 D TGuardMemoryManagerMemoryStrategy: run PollingStrategy
+10-26 01:07:27.398   934  1071 D TGuardMemoryManagerMemoryStrategy: getAvailableMemory = 601060
+10-26 01:07:27.398   934  1071 D TGuardMemoryManagerMemoryStrategy: current top app is :com.google.android.backdrop
+10-26 01:07:27.398   934  1071 I TGuardMemoryManagerMemoryInfoManager: com.google.android.backdrop avgPss is 96305  predictSize is 73728
+10-26 01:07:27.398   934  1071 D TGuardMemoryManagerMemoryStrategy: unit(kb),need=73728,lost=0,memAvail=601056,WarningThreshold=153740,realAvail=447316,realNeed=-373588
+10-26 01:07:27.398   934  1071 I TGuardMemoryManagerMemoryStrategy: com.google.android.backdrop need memory is 0
+10-26 01:07:27.398   934  1071 D TGuardMemoryManagerMemoryStrategy: end calculateNeedMemory, need memory = 0
+10-26 01:07:27.398   934  1071 D TGuardMemoryManagerMemoryStrategy: level = 0, trend = 1, gridIndex =1, strategyR'
+10-26 01:07:27.398   934  1071 I TGuardMemoryManagerMemoryStrategy: memory, trim add 1/2 gap, handleNeed:108782
+10-26 01:07:27.424   934  1071 I NativeJni: CurrentCPULoading is 28
+10-26 01:07:27.425   934  1064 I TGuardMemoryManagerTrimHandler: begin to trim..............begin with:3
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler: now trim memory, rank:3
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler: inside trimRank, rank= 3
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler: rank3 com.google.android.webview:webview_apk
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler: rank3 com.google.android.webview:webview_service
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler: rank3 com.android.dynsystem:dynsystem
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler: rank3 com.google.android.gms.unstable
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler: inside trimRank, rank= 0
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler: rank0 com.google.process.gapps
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler: rank0 com.google.android.youtube.tv.recommendations
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler: rank0 com.google.process.gservices
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler: rank0 com.android.vending:background
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler: rank0 android.process.acore
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler: rank0 
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler: inside trimRank, rank= 1
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler: inside trimRank, rank= 2
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler: rank2 com.google.android.gsf
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler:  proc: 475
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler:  proc: 705
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler: rank2 com.android.vending
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler:  proc: 4013
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler:  proc: 635
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler: rank2 com.google.android.permissioncontroller
+10-26 01:07:27.425   934  1064 D TGuardMemoryManagerTrimHandler:  proc: 3989
+10-26 01:07:27.426   934  1064 D TGuardMemoryManagerTrimHandler: rank2 com.google.android.apps.mediashell
+10-26 01:07:27.426   934  1064 D TGuardMemoryManagerTrimHandler:  proc: 2567
+10-26 01:07:27.426   934  1064 I TGuardMemoryManagerTrimHandler: memory, proc:{com.google.android.apps.mediashell} trim pid:2567 prediction:17285kb
+10-26 01:07:27.438   934  1064 I TGuardMemoryManagerTrimHandler: memory, rank[2, 7] now reclaim pid:2567 realTrim:<0> isRankEnd:false
+10-26 01:07:27.438   934  1064 D TGuardMemoryManagerTrimHandler: inside trimRank, rank= 4
+10-26 01:07:27.438   934  1064 D TGuardMemoryManagerTrimHandler: rank4 com.tcl.keycustomfunctionservice
+10-26 01:07:27.438   934  1064 D TGuardMemoryManagerTrimHandler:  proc: 1334
+10-26 01:07:27.438   934  1064 I TGuardMemoryManagerTrimHandler: memory, proc:{com.tcl.keycustomfunctionservice:remote} trim pid:1334 prediction:18784kb
+10-26 01:07:27.448   934  1064 I TGuardMemoryManagerTrimHandler: memory, rank[4, 0] now reclaim pid:1334 realTrim:<0> isRankEnd:true
+10-26 01:07:27.448   934  1064 D TGuardMemoryManagerTrimHandler: inside trimRank, rank= 5
+10-26 01:07:27.448   934  1064 D TGuardMemoryManagerTrimHandler: inside trimRank, rank= 6
+10-26 01:07:27.448   934  1064 D TGuardMemoryManagerTrimHandler: rank6 com.tcl.guard
+10-26 01:07:27.448   934  1064 D TGuardMemoryManagerTrimHandler: rank6 com.google.android.katniss
+10-26 01:07:27.448   934  1064 D TGuardMemoryManagerTrimHandler:  proc: 1621
+10-26 01:07:27.448   934  1064 I TGuardMemoryManagerTrimHandler: memory, proc:{com.google.android.katniss:interactor} trim pid:1621 prediction:26530kb
+10-26 01:07:27.483   934  1064 I TGuardMemoryManagerTrimHandler: memory, rank[6, 4] now reclaim pid:1621 realTrim:<0> isRankEnd:false
+10-26 01:07:27.483   934  1064 D TGuardMemoryManagerTrimHandler: inside trimRank, rank= 7
+10-26 01:07:27.483   934  1064 D TGuardMemoryManagerTrimHandler: inside trimRank, rank= 8
+10-26 01:07:27.483   934  1064 D TGuardMemoryManagerTrimHandler: inside trimRank, rank= 9
+10-26 01:07:27.483   934  1064 D TGuardMemoryManagerTrimHandler: rank9 com.tcl.MultiScreenInteraction_TV
+10-26 01:07:27.483   934  1064 D TGuardMemoryManagerTrimHandler:  proc: 4048
+10-26 01:07:27.483   934  1064 I TGuardMemoryManagerTrimHandler: memory, proc:{com.tcl.MultiScreenInteraction_TV} trim pid:4048 prediction:18309kb
+10-26 01:07:27.501   934  1064 I TGuardMemoryManagerTrimHandler: memory, rank[9, 3] now reclaim pid:4048 realTrim:<0> isRankEnd:false
+10-26 01:07:27.501   934  1064 D TGuardMemoryManagerTrimHandler: inside trimRank, rank= 10
+10-26 01:07:27.501   934  1064 D TGuardMemoryManagerTrimHandler: rank10 br.eddy.tvhome
+10-26 01:07:27.501   934  1064 D TGuardMemoryManagerTrimHandler:  proc: 3552
+10-26 01:07:27.501   934  1064 I TGuardMemoryManagerTrimHandler: memory, proc:{br.eddy.tvhome} trim pid:3552 prediction:17741kb
+10-26 01:07:27.509   934  1064 I TGuardMemoryManagerTrimHandler: memory, rank[10, 1] now reclaim pid:3552 realTrim:<0> isRankEnd:false
+10-26 01:07:27.509   934  1064 D TGuardMemoryManagerTrimHandler: inside trimRank, rank= 11
+10-26 01:07:27.509   934  1064 D TGuardMemoryManagerTrimHandler: inside trimRank, rank= 12
+10-26 01:07:27.509   934  1064 D TGuardMemoryManagerTrimHandler: rank12 com.google.android.backdrop
+10-26 01:07:27.509   934  1064 I TGuardMemoryManagerTrimHandler: skipped reclaim top package:com.google.android.backdrop
+10-26 01:07:27.509   934  1064 D TGuardMemoryManagerTrimHandler: inside trimRank, rank= 13
+10-26 01:07:27.509   934  1064 D TGuardMemoryManagerTrimHandler: inside trimRank, rank= 14
+10-26 01:07:27.509   934  1064 D TGuardMemoryManagerTrimHandler: rank14 com.google.android.tv.remote.service
+10-26 01:07:27.509   934  1064 D TGuardMemoryManagerTrimHandler:  proc: 1391
+10-26 01:07:27.509   934  1064 I TGuardMemoryManagerTrimHandler: memory, proc:{com.google.android.tv.remote.service} trim pid:1391 prediction:16706kb
+10-26 01:07:27.514   934  1064 I TGuardMemoryManagerTrimHandler: memory, rank[14, 0] now reclaim pid:1391 realTrim:<0> isRankEnd:true
+10-26 01:07:27.514   934  1064 D TGuardMemoryManagerTrimHandler: inside trimRank, rank= 15
+10-26 01:07:27.514   934  1064 D TGuardMemoryManagerTrimHandler: rank15 com.tcl.inputmethod.international
+10-26 01:07:27.514   934  1064 D TGuardMemoryManagerTrimHandler:  proc: 1708
+10-26 01:07:27.514   934  1064 I TGuardMemoryManagerTrimHandler: memory, proc:{com.tcl.inputmethod.international} trim pid:1708 prediction:16296kb
+10-26 01:07:27.517   934  1064 I TGuardMemoryManagerTrimHandler: memory, rank[15, 0] now reclaim pid:1708 realTrim:<0> isRankEnd:true
+10-26 01:07:27.517   934  1064 D TGuardMemoryManagerTrimHandler: inside trimRank, rank= 16
+10-26 01:07:27.517   934  1064 D TGuardMemoryManagerTrimHandler: rank16 com.google.android.tvlauncher
+10-26 01:07:27.517   934  1064 D TGuardMemoryManagerTrimHandler: all done, memory rank:17
+10-26 01:07:27.517   934  1064 I TGuardMemoryManagerTrimHandler: memory, finished trim total:0 need:108782
+10-26 01:07:28.159   704   880 E WifiVendorHal: getWifiLinkLayerStats_1_3_Internal(l.978) failed {.code = ERROR_NOT_SUPPORTED, .description = }
+10-26 01:07:28.592  1263  1266 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+10-26 01:07:28.874  1274  1276 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+10-26 01:07:29.034  1282  1287 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+10-26 01:07:30.677   704   757 I AppRecordManager: onUidStateChanged: uid=10012 procState=19 procStateSeq=0
+10-26 01:07:30.687   704   772 I AppRecord: notePSSChanged: uid = 10012, pid = 635
+10-26 01:07:30.687   704   914 I AppRecordManager: handleMessage # { when=0 what=7 obj=Bundle[{pid=635, uid=10012}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:30.688   704   914 I AppRecordTransition: {"version":1,"pssUpdate":{"pkg":"com.android.vending","uid":10012,"pid":635,"pss":45646}}
+10-26 01:07:30.688   704   914 I AppRecordTransition: notePSSChanged + uid = 10012 pid = 635pss = 45646
+10-26 01:07:30.688   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 5, package name is com.android.vending, bitMap is -1
+10-26 01:07:30.710   704   772 I AppRecord: notePSSChanged: uid = 10012, pid = 4013
+10-26 01:07:30.710   704   914 I AppRecordManager: handleMessage # { when=0 what=7 obj=Bundle[{pid=4013, uid=10012}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:30.710   704   914 I AppRecordTransition: {"version":1,"pssUpdate":{"pkg":"com.android.vending","uid":10012,"pid":4013,"pss":65291}}
+10-26 01:07:30.711   704   914 I AppRecordTransition: notePSSChanged + uid = 10012 pid = 4013pss = 65291
+10-26 01:07:30.711   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 5, package name is com.android.vending, bitMap is -1
+10-26 01:07:31.174   704   880 E WifiVendorHal: getWifiLinkLayerStats_1_3_Internal(l.978) failed {.code = ERROR_NOT_SUPPORTED, .description = }
+10-26 01:07:31.190   704   757 I AppRecordManager: onUidStateChanged: uid=10108 procState=10 procStateSeq=0
+10-26 01:07:31.192   704   757 I AppRecordManager: onUidStateChanged: uid=10108 procState=19 procStateSeq=0
+10-26 01:07:31.594   704   928 D FreezeManager: before doFreeze 475 pro com.google.process.gservices
+10-26 01:07:31.594   704   928 D Process : doFreeze success for 475
+10-26 01:07:31.594   704   928 D FreezeManager: doFreeze 475 pro com.google.process.gservices res true
+10-26 01:07:31.595   704   928 I AppRecord: noteFreezeStateChange: pid = 475, pkg: com.google.process.gservices, isFreeze: true
+10-26 01:07:31.595   704   914 I AppRecordManager: handleMessage # { when=0 what=9 obj=Bundle[{isFreeze=true, pid=475, pkg=com.google.process.gservices}] target=com.android.server.am.apprecord.AppRecordListenerManager$ListenerHandler }
+10-26 01:07:31.595   704   930 D freeze  : recv from kernel: tag 5 buf [PID 475][BUSY 0] 
+10-26 01:07:31.595   704   930 D freeze  : recv from kernel: tag 5 pid is 475 state 0 
+10-26 01:07:31.595   704   914 I AppRecordTransition: noteFreezeStateChange  packageName = com.google.process.gservices isFreeze = true
+10-26 01:07:31.595   704   930 D Process : freeze state is 5 pid is 475 ohter is 0
+10-26 01:07:31.596   704   914 I AppRecordTransition: {"version":1,"appStateBM":{"pkg":"com.google.process.gservices","uid":-1,"pid":-1,"bm":8}}
+10-26 01:07:31.597   934   983 I TGuardMemoryManagerAppClassifier: AppRecord message type is 4, package name is com.google.process.gservices, bitMap is 8
+10-26 01:07:32.204   900  1117 D TCastPublishOverUdp: b1cf986@sendOnline
+10-26 01:07:33.178  1303  1305 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+10-26 01:07:33.294  1310  1312 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+10-26 01:07:33.433  1317  1319 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+10-26 01:07:34.187   704   880 E WifiVendorHal: getWifiLinkLayerStats_1_3_Internal(l.978) failed {.code = ERROR_NOT_SUPPORTED, .description = }
+10-26 01:07:37.202   704   880 E WifiVendorHal: getWifiLinkLayerStats_1_3_Internal(l.978) failed {.code = ERROR_NOT_SUPPORTED, .description = }
+10-26 01:07:37.606   900  1117 D TCastPublishOverUdp: b1cf986@sendOnline
+10-26 01:07:38.853   704   928 D FreezeManager: doFreeze 3444 is died,skip freeze proCurent null
+10-26 01:07:39.274   704   928 D FreezeManager: doFreeze 1380 is died,skip freeze proCurent null
+10-26 01:07:39.287   704   928 D FreezeManager: doFreeze 3886 is died,skip freeze proCurent null
+10-26 01:07:39.312   704   928 D FreezeManager: doFreeze 3481 is died,skip freeze proCurent null
+10-26 01:07:39.319   704   928 D FreezeManager: doFreeze 1295 is died,skip freeze proCurent null
+10-26 01:07:40.216   704   880 E WifiVendorHal: getWifiLinkLayerStats_1_3_Internal(l.978) failed {.code = ERROR_NOT_SUPPORTED, .description = }
+10-26 01:07:43.008   900  1117 D TCastPublishOverUdp: b1cf986@sendOnline
+10-26 01:07:43.231   704   880 E WifiVendorHal: getWifiLinkLayerStats_1_3_Internal(l.978) failed {.code = ERROR_NOT_SUPPORTED, .description = }
+10-26 01:07:44.481  1366  1371 I cmd     : oneway function results will be dropped but finished with status OK and parcel size 4
+10-26 01:07:46.243   704   880 E WifiVendorHal: getWifiLinkLayerStats_1_3_Internal(l.978) failed {.code = ERROR_NOT_SUPPORTED, .description = }
+10-26 01:07:48.409   900  1117 D TCastPublishOverUdp: b1cf986@sendOnline
+10-26 01:07:48.496  2567  2567 I cast_shell: [1026/010748.496108:INFO:service_base.h(78)] Size of the map for type AuthTokenResponse is 0
+10-26 01:07:48.709  2567  2567 I cast_shell: [1026/010748.709238:INFO:service_base.h(246)] Container sizes for type CloudSetting are (session_info_map: 0), (topic_info_map: 21), (pending_events: 0).
+10-26 01:07:49.255   704   880 E WifiVendorHal: getWifiLinkLayerStats_1_3_Internal(l.978) failed {.code = ERROR_NOT_SUPPORTED, .description = }
+10-26 01:07:49.625  2567  2620 I cast_shell: [1026/010749.625145:INFO:wifi_frame_histogram_capturer.cc(406)] No histogram or IOCTL data
+10-26 01:07:49.680  2567  2567 I cast_shell: [1026/010749.680075:INFO:metrics_recorder.cc(193)] Record action: Cast.CecHdmiInputState.Unknown
+10-26 01:07:49.680  2567  2567 I cast_shell: [1026/010749.680293:INFO:metrics_recorder.cc(193)] Record action: Cast.CecStandby.Unknown
+10-26 01:07:49.683  2567  2567 I cast_shell: [1026/010749.683352:INFO:metrics_stat_logger.cc(38)] Metrics stat for the past 60 secs : total=6
+10-26 01:07:49.683  2567  2567 I cast_shell: [metrics_stat_logger] AppRunning=1
+10-26 01:07:49.683  2567  2567 I cast_shell: [metrics_stat_logger] Cast.CecHdmiInputState.Unknown=1
+10-26 01:07:49.683  2567  2567 I cast_shell: [metrics_stat_logger] Cast.CecStandby.Unknown=1
+10-26 01:07:49.683  2567  2567 I cast_shell: [metrics_stat_logger] Cast.ConnectionType.Unknown=1
+10-26 01:07:49.683  2567  2567 I cast_shell: [metrics_stat_logger] Cast.Network.CheckIn=1
+10-26 01:07:49.683  2567  2567 I cast_shell: [metrics_stat_logger] Cast.Platform.TrimMemory=1

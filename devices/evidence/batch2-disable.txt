@@ -1,0 +1,5 @@
+### BATCH 2 Mon Oct 26 04:07:14 UTC 2026
+--- disable com.tcl.guard
+Package com.tcl.guard new state: disabled-user
+--- disable com.google.android.feedback
+Package com.google.android.feedback new state: disabled-user

@@ -1,0 +1,18 @@
+=== state of every package we must not break
+com.tcl.tv                                    ENABLED
+com.tcl.tvinput                               ENABLED
+com.tcl.micmanager                            ENABLED
+com.google.android.katniss                    ENABLED
+com.google.android.gms                        ENABLED
+com.google.android.apps.mediashell            ENABLED
+com.google.android.backdrop                   ENABLED
+com.tcl.partnercustomizer                     ENABLED
+com.tcl.keycustomfunctionservice              ENABLED
+com.tcl.overseasappshow                       ENABLED
+com.tcl.tv.tclhome_master                     ENABLED
+com.tcl.notereminder                          ENABLED
+com.tcl.MultiScreenInteraction_TV             ENABLED
+com.tcl.esticker                              ENABLED
+br.eddy.tvhome                                ENABLED
+com.gathin.tvhome                             ENABLED
+com.tcl.versionUpdateApp                      ENABLED

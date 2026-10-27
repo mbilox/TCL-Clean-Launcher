@@ -1,0 +1,89 @@
+Activity Resolver Table:
+  Non-Data Actions:
+      android.intent.action.APP_ERROR:
+        9428c15 com.google.android.feedback/.FeedbackActivity filter 5423b2a
+          Action: "android.intent.action.APP_ERROR"
+          Category: "android.intent.category.DEFAULT"
+
+Service Resolver Table:
+  Non-Data Actions:
+      android.intent.action.BUG_REPORT:
+        7b62d1b com.google.android.feedback/.BugReportService filter 8319eb8
+          Action: "android.intent.action.BUG_REPORT"
+          Category: "android.intent.category.DEFAULT"
+
+Key Set Manager:
+  [com.google.android.feedback]
+      Signing KeySets: 6
+
+Packages:
+  Package [com.google.android.feedback] (9aa1fdb):
+    userId=10035
+    pkg=Package{1867a78 com.google.android.feedback}
+    codePath=/system/system_ext/priv-app/GoogleFeedback
+    resourcePath=/system/system_ext/priv-app/GoogleFeedback
+    legacyNativeLibraryDir=/system/system_ext/priv-app/GoogleFeedback/lib
+    primaryCpuAbi=null
+    secondaryCpuAbi=null
+    versionCode=30 minSdk=30 targetSdk=29
+    versionName=11-6626444
+    splits=[base]
+    apkSigningVersion=3
+    applicationInfo=ApplicationInfo{1867a78 com.google.android.feedback}
+    flags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    privateFlags=[ PRIVATE_FLAG_ACTIVITIES_RESIZE_MODE_RESIZEABLE_VIA_SDK_VERSION ALLOW_AUDIO_PLAYBACK_CAPTURE PRIVILEGED SYSTEM_EXT PRIVATE_FLAG_ALLOW_NATIVE_HEAP_POINTER_TAGGING ]
+    forceQueryable=false
+    queriesPackages=[]
+    dataDir=/data/user/0/com.google.android.feedback
+    supportsScreens=[small, medium, large, xlarge, resizeable, anyDensity]
+    usesLibraries:
+      android.test.base
+    usesOptionalLibraries:
+      org.apache.http.legacy
+    usesLibraryFiles:
+      /system/framework/android.test.base.jar
+      /system/framework/org.apache.http.legacy.jar
+    timeStamp=2008-12-31 22:00:00
+    firstInstallTime=2008-12-31 14:00:00
+    lastUpdateTime=2008-12-31 22:00:00
+    signatures=PackageSignatures{62e551 version:3, signatures:[e3ca78d8], past signatures:[]}
+    installPermissionsFixed=true
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ALLOW_BACKUP ]
+    requested permissions:
+      android.permission.READ_LOGS
+      android.permission.PACKAGE_USAGE_STATS
+      android.permission.INTERNET
+      android.permission.ACCESS_NETWORK_STATE
+      com.google.android.providers.gsf.permission.READ_GSERVICES
+    install permissions:
+      com.google.android.providers.gsf.permission.READ_GSERVICES: granted=true
+      android.permission.INTERNET: granted=true
+      android.permission.PACKAGE_USAGE_STATS: granted=true
+      android.permission.ACCESS_NETWORK_STATE: granted=true
+      android.permission.READ_LOGS: granted=true
+    User 0: ceDataInode=751 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false
+      gids=[3003, 1007]
+      runtime permissions:
+
+Queries:
+  system apps queryable: false
+  queries via package name:
+  queries via intent:
+  queryable via interaction:
+    User 0:
+
+Package Changes:
+  Sequence number=2
+  User 0:
+    seq=1, package=com.google.android.tvrecommendations
+
+
+Dexopt state:
+  [com.google.android.feedback]
+    path: /system/system_ext/priv-app/GoogleFeedback/GoogleFeedback.apk
+      arm: [status=speed-profile] [reason=bg-dexopt]
+
+
+Compiler stats:
+  [com.google.android.feedback]
+     GoogleFeedback.apk - 521

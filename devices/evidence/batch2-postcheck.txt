@@ -1,0 +1,7 @@
+=== crash after batch2 Mon Oct 26 04:07:28 UTC 2026
+=== HOME
+priority=0 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=true
+ActivityInfo:
+  name=com.gathin.tvhome.MainActivity
+  packageName=br.eddy.tvhome
+  enabled=true exported=true directBootAware=false

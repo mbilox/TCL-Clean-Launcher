@@ -1,0 +1,11 @@
+### BATCH 1 Mon Oct 26 04:06:58 UTC 2026
+--- disable com.tcl.bi
+Package com.tcl.bi new state: disabled-user
+--- disable com.tcl.tv.tclhome_passive
+Package com.tcl.tv.tclhome_passive new state: disabled-user
+--- disable com.tcl.waterfall.overseas
+Package com.tcl.waterfall.overseas new state: disabled-user
+--- disable com.tcl.messagebox
+Package com.tcl.messagebox new state: disabled-user
+--- disable com.google.android.partnersetup
+Package com.google.android.partnersetup new state: disabled-user

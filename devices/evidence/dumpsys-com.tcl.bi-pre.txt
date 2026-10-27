@@ -1,0 +1,240 @@
+Service Resolver Table:
+  Non-Data Actions:
+      com.tcl.ttvs.bi.services.START:
+        ce5fb16 com.tcl.bi/com.tcl.ttvs.bi.core.BIService filter 970cc97
+          Action: "com.tcl.ttvs.bi.services.START"
+
+Provider Resolver Table:
+  Non-Data Actions:
+      com.tcl.ttvs.action.bi.ParamProvider:
+        b8f3cd8 com.tcl.bi/com.tcl.ttvs.bi.provider.ParamProvider filter 796e831
+          Action: "com.tcl.ttvs.action.bi.ParamProvider"
+          mPriority=100, mOrder=0, mHasStaticPartialTypes=false, mHasDynamicPartialTypes=false
+
+Permissions:
+  Permission [com.tcl.bi.permission.access] (609601b):
+    sourcePackage=com.tcl.bi
+    uid=10075 gids=null type=0 prot=normal
+    perm=Permission{d2855b8 com.tcl.bi.permission.access}
+
+Permissions:
+  Permission [com.tcl.bi.param] (89abf91):
+    sourcePackage=com.tcl.bi
+    uid=10075 gids=null type=0 prot=normal
+    perm=Permission{b67eef6 com.tcl.bi.param}
+
+Registered ContentProviders:
+  com.tcl.bi/com.tcl.ff.component.utils.common.UtilsFileProvider:
+    Provider{e53e2f7 com.tcl.bi/com.tcl.ff.component.utils.common.UtilsFileProvider}
+  com.tcl.bi/com.tcl.ttvs.bi.provider.ParamProvider:
+    Provider{b8f3cd8 com.tcl.bi/com.tcl.ttvs.bi.provider.ParamProvider}
+  com.tcl.bi/.provider.ParamProvider:
+    Provider{ae91564 com.tcl.bi/.provider.ParamProvider}
+
+ContentProvider Authorities:
+  [com.tcl.bi.utils.common.provider]:
+    Provider{e53e2f7 com.tcl.bi/com.tcl.ff.component.utils.common.UtilsFileProvider}
+      applicationInfo=ApplicationInfo{c09d476 com.tcl.bi}
+  [com.tcl.bi.param]:
+    Provider{ae91564 com.tcl.bi/.provider.ParamProvider}
+      applicationInfo=ApplicationInfo{82f9a77 com.tcl.bi}
+  [com.tcl.ttvs.bi.param]:
+    Provider{b8f3cd8 com.tcl.bi/com.tcl.ttvs.bi.provider.ParamProvider}
+      applicationInfo=ApplicationInfo{c5f36e4 com.tcl.bi}
+
+Key Set Manager:
+  [com.tcl.bi]
+      Signing KeySets: 2
+
+Packages:
+  Package [com.tcl.bi] (9d423d0):
+    userId=10075
+    pkg=Package{51ccfc9 com.tcl.bi}
+    codePath=/data/app/~~vx1O-_5CewIZtqSz5QFOog==/com.tcl.bi-wXzbp_Z0vyqn-azWBciDlw==
+    resourcePath=/data/app/~~vx1O-_5CewIZtqSz5QFOog==/com.tcl.bi-wXzbp_Z0vyqn-azWBciDlw==
+    legacyNativeLibraryDir=/data/app/~~vx1O-_5CewIZtqSz5QFOog==/com.tcl.bi-wXzbp_Z0vyqn-azWBciDlw==/lib
+    primaryCpuAbi=armeabi-v7a
+    secondaryCpuAbi=null
+    versionCode=20800 minSdk=19 targetSdk=25
+    versionName=2.08.00
+    splits=[base]
+    apkSigningVersion=2
+    applicationInfo=ApplicationInfo{51ccfc9 com.tcl.bi}
+    flags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA UPDATED_SYSTEM_APP ]
+    privateFlags=[ PRIVATE_FLAG_ACTIVITIES_RESIZE_MODE_RESIZEABLE_VIA_SDK_VERSION PRIVATE_FLAG_REQUEST_LEGACY_EXTERNAL_STORAGE DIRECT_BOOT_AWARE PARTIALLY_DIRECT_BOOT_AWARE PRODUCT PRIVATE_FLAG_ALLOW_NATIVE_HEAP_POINTER_TAGGING ]
+    forceQueryable=false
+    dataDir=/data/user/0/com.tcl.bi
+    supportsScreens=[small, medium, large, xlarge, resizeable, anyDensity]
+    usesLibraries:
+      android.test.base
+      android.hidl.manager-V1.0-java
+      android.hidl.base-V1.0-java
+      org.apache.http.legacy
+    usesOptionalLibraries:
+      com.tcl.tvmanager
+      com.tcl.deviceinfo
+      android.tclwidget
+      com.tcl.packageinstaller
+      com.tcl.tvos.addon
+    usesLibraryFiles:
+      /system/framework/android.test.base.jar
+      /system/framework/android.hidl.manager-V1.0-java.jar
+      /system/framework/android.hidl.base-V1.0-java.jar
+      /system/framework/org.apache.http.legacy.jar
+      /product/framework/com.tcl.tvmanager.jar
+      /system_ext/framework/android.tclwidget.jar
+    timeStamp=2023-12-24 10:05:22
+    firstInstallTime=2008-12-31 14:00:00
+    lastUpdateTime=2023-12-24 10:05:25
+    installerPackageName=com.tcl.versionUpdateApp
+    signatures=PackageSignatures{309e6ce version:2, signatures:[124cab85], past signatures:[]}
+    installPermissionsFixed=true
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA UPDATED_SYSTEM_APP ]
+    declared permissions:
+      com.tcl.bi.permission.access: prot=normal, INSTALLED
+      com.tcl.bi.param: prot=normal, INSTALLED
+    requested permissions:
+      android.permission.ACCESS_NETWORK_STATE
+      android.permission.INTERNET
+      android.permission.GET_TASKS
+      android.permission.RECEIVE_BOOT_COMPLETED
+      android.permission.READ_PHONE_STATE
+      android.permission.ACCESS_WIFI_STATE
+      android.permission.READ_LOGS
+      android.permission.WRITE_EXTERNAL_STORAGE: restricted=true
+      android.permission.READ_EXTERNAL_STORAGE: restricted=true
+      android.permission.REAL_GET_TASKS
+      android.permission.FOREGROUND_SERVICE
+      android.permission.INSTALL_SELF_UPDATES
+      com.tcl.bi.permission.access
+      com.tcl.bi.param
+      com.tcl.ttvs.deviceauthen.permission.READ_DNUM
+      android.permission.ACCESS_MEDIA_LOCATION
+    install permissions:
+      android.permission.REAL_GET_TASKS: granted=true
+      com.tcl.bi.permission.access: granted=true
+      android.permission.FOREGROUND_SERVICE: granted=true
+      android.permission.RECEIVE_BOOT_COMPLETED: granted=true
+      com.tcl.bi.param: granted=true
+      android.permission.GET_TASKS: granted=true
+      android.permission.INTERNET: granted=true
+      android.permission.ACCESS_NETWORK_STATE: granted=true
+      android.permission.READ_LOGS: granted=true
+      android.permission.INSTALL_SELF_UPDATES: granted=true
+      android.permission.ACCESS_WIFI_STATE: granted=true
+    User 0: ceDataInode=840 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false
+      gids=[3003, 1007]
+      runtime permissions:
+        android.permission.READ_EXTERNAL_STORAGE: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|RESTRICTION_INSTALLER_EXEMPT|RESTRICTION_UPGRADE_EXEMPT]
+        android.permission.READ_PHONE_STATE: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED]
+        android.permission.WRITE_EXTERNAL_STORAGE: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|RESTRICTION_INSTALLER_EXEMPT|RESTRICTION_UPGRADE_EXEMPT]
+        android.permission.ACCESS_MEDIA_LOCATION: granted=false, flags=[ REVOKE_WHEN_REQUESTED|USER_SENSITIVE_WHEN_GRANTED]
+
+Hidden system packages:
+  Package [com.tcl.bi] (de39ef):
+    userId=10075
+    pkg=Package{21facfc com.tcl.bi}
+    codePath=/product/app/TCL_ALL_BI
+    resourcePath=/product/app/TCL_ALL_BI
+    legacyNativeLibraryDir=/product/app/TCL_ALL_BI/lib
+    primaryCpuAbi=armeabi-v7a
+    secondaryCpuAbi=null
+    versionCode=20106 minSdk=16 targetSdk=25
+    versionName=2.01.06
+    splits=[base]
+    apkSigningVersion=0
+    applicationInfo=ApplicationInfo{21facfc com.tcl.bi}
+    flags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    privateFlags=[ PRIVATE_FLAG_ACTIVITIES_RESIZE_MODE_RESIZEABLE_VIA_SDK_VERSION PRIVATE_FLAG_REQUEST_LEGACY_EXTERNAL_STORAGE DIRECT_BOOT_AWARE PRODUCT PRIVATE_FLAG_ALLOW_NATIVE_HEAP_POINTER_TAGGING ]
+    forceQueryable=false
+    queriesPackages=[]
+    dataDir=/data/user/0/com.tcl.bi
+    supportsScreens=[small, medium, large, xlarge, resizeable, anyDensity]
+    usesLibraries:
+      android.test.base
+      android.hidl.manager-V1.0-java
+      android.hidl.base-V1.0-java
+      org.apache.http.legacy
+    usesOptionalLibraries:
+      com.tcl.tvmanager
+      com.tcl.deviceinfo
+      android.tclwidget
+      com.tcl.packageinstaller
+    timeStamp=2008-12-31 22:00:00
+    firstInstallTime=2008-12-31 14:00:00
+    lastUpdateTime=2008-12-31 22:00:00
+    signatures=PackageSignatures{5199f85 version:0, signatures:[], past signatures:[]}
+    installPermissionsFixed=false
+    pkgFlags=[ SYSTEM HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    declared permissions:
+      com.tcl.bi.permission.access: prot=normal
+      com.tcl.bi.param: prot=normal
+    requested permissions:
+      android.permission.ACCESS_NETWORK_STATE
+      android.permission.INTERNET
+      android.permission.GET_TASKS
+      android.permission.RECEIVE_BOOT_COMPLETED
+      android.permission.READ_PHONE_STATE
+      android.permission.ACCESS_WIFI_STATE
+      android.permission.READ_LOGS
+      android.permission.WRITE_EXTERNAL_STORAGE: restricted=true
+      android.permission.READ_EXTERNAL_STORAGE: restricted=true
+      android.permission.REAL_GET_TASKS
+      android.permission.FOREGROUND_SERVICE
+      android.permission.INSTALL_SELF_UPDATES
+      android.permission.SYSTEM_ALERT_WINDOW
+      com.tcl.bi.permission.access
+      com.tcl.bi.param
+      android.permission.MOUNT_UNMOUNT_FILESYSTEMS
+      android.permission.ACCESS_MEDIA_LOCATION
+    install permissions:
+      android.permission.REAL_GET_TASKS: granted=true
+      android.permission.SYSTEM_ALERT_WINDOW: granted=true
+      com.tcl.bi.permission.access: granted=true
+      android.permission.FOREGROUND_SERVICE: granted=true
+      android.permission.RECEIVE_BOOT_COMPLETED: granted=true
+      com.tcl.bi.param: granted=true
+      android.permission.GET_TASKS: granted=true
+      android.permission.INTERNET: granted=true
+      android.permission.MOUNT_UNMOUNT_FILESYSTEMS: granted=true
+      android.permission.ACCESS_NETWORK_STATE: granted=true
+      android.permission.READ_LOGS: granted=true
+      android.permission.INSTALL_SELF_UPDATES: granted=true
+      android.permission.ACCESS_WIFI_STATE: granted=true
+    User 0: ceDataInode=0 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false
+      gids=[3003, 1007]
+      runtime permissions:
+
+Queries:
+  system apps queryable: false
+  forceQueryable:
+    com.tcl.bi
+  queries via package name:
+  queries via intent:
+  queryable via interaction:
+    User 0:
+      [com.tcl.copydatatotv,com.tcl.messagebox,com.tcl.tv.tclhome_master,com.android.tv.settings,com.tcl.initsetup,com.tcl.settings,com.tcl.assistant,com.tcl.tv,com.android.location.fused,com.tcl.ui_mediaCenter,com.tcl.MultiScreenInteraction_TV,com.tcl.esticker,com.tcl.providers.config,com.tcl.smartalexa,com.android.keychain,uk.co.freeview.systemdistributor,com.android.localtransport,com.tcl.guard,com.tcl.micmanager,android,com.tcl.gallery,com.google.android.tv.assistant,com.tcl.autopair,com.tcl.overseasappshow,com.tcl.factory.view,com.tcl.partnercustomizer,com.android.wallpaperbackup,com.tcl.tvinput,com.tcl.keycustomfunctionservice,com.android.dynsystem,com.tcl.systemserver,com.android.inputdevices,com.tcl.miracast,com.android.providers.settings,com.android.networkstack.inprocess,com.android.networkstack.tethering.inprocess,com.tcl.versionUpdateApp]:
+        com.tcl.bi
+      com.tcl.bi:
+        [com.tcl.copydatatotv,com.tcl.messagebox,com.tcl.tv.tclhome_master,com.android.tv.settings,com.tcl.initsetup,com.tcl.settings,com.tcl.assistant,com.tcl.tv,com.android.location.fused,com.tcl.ui_mediaCenter,com.tcl.MultiScreenInteraction_TV,com.tcl.esticker,com.tcl.providers.config,com.tcl.smartalexa,com.android.keychain,uk.co.freeview.systemdistributor,com.android.localtransport,com.tcl.guard,com.tcl.micmanager,android,com.tcl.gallery,com.google.android.tv.assistant,com.tcl.autopair,com.tcl.overseasappshow,com.tcl.factory.view,com.tcl.partnercustomizer,com.android.wallpaperbackup,com.tcl.tvinput,com.tcl.keycustomfunctionservice,com.android.dynsystem,com.tcl.systemserver,com.android.inputdevices,com.tcl.miracast,com.android.providers.settings,com.android.networkstack.inprocess,com.android.networkstack.tethering.inprocess,com.tcl.versionUpdateApp]
+        com.tcl.usercenter
+        com.tcl.notereminder
+      com.tcl.xian.StartandroidService:
+        com.tcl.bi
+
+Package Changes:
+  Sequence number=2
+  User 0:
+    seq=1, package=com.google.android.tvrecommendations
+
+
+Dexopt state:
+  [com.tcl.bi]
+    path: /data/app/~~vx1O-_5CewIZtqSz5QFOog==/com.tcl.bi-wXzbp_Z0vyqn-azWBciDlw==/base.apk
+      arm: [status=speed-profile] [reason=bg-dexopt]
+
+
+Compiler stats:
+  [com.tcl.bi]
+     base.apk - 6747
+     TCL_ALL_BI.apk - 17574

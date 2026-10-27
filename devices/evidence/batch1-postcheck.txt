@@ -1,0 +1,22 @@
+=== crash after batch1 Mon Oct 26 04:07:10 UTC 2026
+=== HOME
+priority=0 preferredOrder=0 match=0x108000 specificIndex=-1 isDefault=true
+ActivityInfo:
+  name=com.gathin.tvhome.MainActivity
+  packageName=br.eddy.tvhome
+  enabled=true exported=true directBootAware=false
+  taskAffinity=br.eddy.tvhome targetActivity=null persistableMode=PERSIST_ROOT_ONLY
+  launchMode=2 flags=0x234 privateFlags=0x0 theme=0x0
+  screenOrientation=0 configChanges=0x6b3 softInputMode=0x0
+  lockTaskLaunchMode=LOCK_TASK_LAUNCH_MODE_DEFAULT
+  resizeMode=RESIZE_MODE_RESIZEABLE_VIA_SDK_VERSION
+  ApplicationInfo:
+    packageName=br.eddy.tvhome
+    labelRes=0x7f0d0000 nonLocalizedLabel=null icon=0x7f0c0000 banner=0x7f060000
+    processName=br.eddy.tvhome
+    taskAffinity=br.eddy.tvhome
+    uid=10132 flags=0x20883e44 privateFlags=0x8c001000 theme=0x7f0e0007
+    requiresSmallestWidthDp=0 compatibleWidthLimitDp=0 largestWidthLimitDp=0
+    sourceDir=/data/app/~~2OYyt729xVUHsZTNCGhEdA==/br.eddy.tvhome-QvDt6Vh0NJpqvKf52Crk6g==/base.apk
+    seinfo=default:targetSdkVersion=29
+    seinfoUser=

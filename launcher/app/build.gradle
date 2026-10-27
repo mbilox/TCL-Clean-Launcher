@@ -2,17 +2,41 @@ plugins {
     id 'com.android.application'
 }
 
+// Release signing: launcher/keystore.properties (gitignored) points at a keystore kept OUTSIDE this
+// repo. Without that file the release build falls back to the debug key, like upstream.
+def keystorePropsFile = new File(rootDir, 'keystore.properties')
+def keystoreProps = new Properties()
+def hasReleaseKey = keystorePropsFile.exists()
+if (hasReleaseKey) {
+    keystorePropsFile.withInputStream { keystoreProps.load(it) }
+}
+
 android {
     namespace 'com.gathin.tvhome'
     compileSdk 34
 
+    signingConfigs {
+        if (hasReleaseKey) {
+            release {
+                storeFile new File(rootDir, keystoreProps['storeFile'])
+                storePassword keystoreProps['storePassword']
+                keyAlias keystoreProps['keyAlias']
+                keyPassword keystoreProps['keyPassword']
+            }
+        }
+    }
+
     defaultConfig {
         // Opt-in identity for firmware with a package-name HOME allowlist; see docs/devices/xiaomi-mitv-aetp0-dofus.md.
+        // TCL Clean Launcher ships its own identity, set in launcher/gradle.properties.
         applicationId providers.gradleProperty('launcherApplicationId').getOrElse('com.gathin.tvhome')
         minSdk 26
         targetSdk 34
         versionCode 9
         versionName '3.0'
+        // TCL Clean Launcher targets LATAM only: dropping the other 24 locales saves ~165 KB of
+        // the APK and ~160 KB of resources.arsc (measured on the real unit, docs/project/AUDIT.md).
+        resourceConfigurations += ['en', 'es', 'pt']
     }
 
     buildTypes {
@@ -21,8 +45,9 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            // Sideloaded over ADB, never published: sign with the debug key so it installs over a debug build.
-            signingConfig signingConfigs.debug
+            // Our own key when launcher/keystore.properties exists (it is gitignored and the keystore
+            // lives outside the repo). Without it, fall back to the debug key like upstream does.
+            signingConfig hasReleaseKey ? signingConfigs.release : signingConfigs.debug
         }
     }
 
