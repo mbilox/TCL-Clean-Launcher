@@ -10,7 +10,7 @@ TV de 2 GB y un control remoto, y con un presupuesto de rendimiento medido en la
 | Target | TCL BeyondTV2 `BeyondTV2` / `BeyondTV`, board `rtd285o`, firmware `V8-R851T02-LF1V660` (AR05) |
 | applicationId | `ar.TCL.cleanLauncher` |
 | Modos | **Normal** (look completo: efectos, wallpapers, skins) y **Máxima optimización** |
-| Estado | Planificación cerrada; ejecución de F1 en curso (repo + build propio) |
+| Estado | F1 cerrado en local (repo + identidad + firma). Próximo: F5 paso 1 o F3 |
 
 ## Qué agrega este proyecto
 
@@ -31,6 +31,7 @@ TV de 2 GB y un control remoto, y con un presupuesto de rendimiento medido en la
 | [`LOG.md`](LOG.md) | Bitácora cronológica de decisiones y evidencia (manda sobre el resto si hay contradicción) |
 | [`TASKS.md`](TASKS.md) | Checklist de trabajo con estado |
 | [`APP-MAP.md`](APP-MAP.md) | Mapa de paquetes de la unidad: qué hace cada uno y si es seguro apagarlo |
+| [`NEXT-SESSION.md`](NEXT-SESSION.md) | Prompt de arranque para retomar el proyecto en otra sesión |
 
 ## Layout del repositorio
 
@@ -44,6 +45,18 @@ Este repo es un **fork completo** del upstream: el árbol de arriba (`launcher/`
 | `docs/project/` | Documentación de este fork (este índice) |
 | `devices/tcl-beyondtv2-ar05/` | Evidencia de la unidad real: debloat, backups, reportes |
 | `presets/` | Presets de los modos Normal / Máxima optimización |
+
+Comandos de build (toolchain local, no entra al repo):
+
+```bash
+cd launcher
+export JAVA_HOME=C:/repositorios/TCL-Tv/tools/jdk/jdk-17.0.20.1+1
+# local.properties: sdk.dir=C:/repositorios/TCL-Tv/tools/sdk
+./gradlew assembleRelease
+```
+
+La firma se toma de `launcher/keystore.properties` si existe; el keystore vive en
+`C:/repositorios/TCL-Tv/keys/`, fuera de este repo.
 
 ## Licencia
 
