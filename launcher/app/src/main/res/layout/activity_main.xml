@@ -329,6 +329,19 @@
                     android:drawableStart="@drawable/ic_input"
                     android:nextFocusDown="@+id/grid" />
 
+                <!-- Icon only: fires ACTION_ASSIST. On this TCL firmware the vendor injector taps the
+                     Home's voice button for the remote's mic key (FINDINGS §5), so the button must
+                     exist for the assistant to work; the SEARCH key itself is never consumed. -->
+                <TextView
+                    android:id="@+id/btnVoice"
+                    style="@style/TopButton"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:drawablePadding="0dp"
+                    android:drawableStart="@drawable/ic_mic"
+                    android:contentDescription="@string/voice"
+                    android:nextFocusDown="@+id/grid" />
+
                 <TextView
                     android:id="@+id/btnWifi"
                     style="@style/TopButton"
