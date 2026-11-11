@@ -44,6 +44,21 @@ final class Config {
     static final String WALLPAPER_CHOICE_KEY = "wallpaper_choice";
     static final String DOCK_OPACITY_KEY = "dock_opacity";
     /**
+     * Fork-only: the look chosen in Launcher settings. "full" leaves the theme or config.xml in charge;
+     * "lean" and "icons" override the banner keys below (see Config.load).
+     */
+    static final String BANNER_MODE_KEY = "banner_mode";
+    static final String BANNER_MODE_FULL = "full";
+    static final String BANNER_MODE_LEAN = "lean";
+    static final String BANNER_MODE_ICONS = "icons";
+    /**
+     * Fork-only: the preset applied last from Launcher settings, "normal" or "max". The preset itself lives in
+     * config.json; this key only remembers which one the row shows.
+     */
+    static final String MODE_KEY = "mode";
+    static final String MODE_NORMAL = "normal";
+    static final String MODE_MAX = "max";
+    /**
      * Counts the changes made in Launcher settings. Home remembers the count it was built with and rebuilds on
      * resume when it differs, however the settings were left (see MainActivity#onResume).
      */
@@ -629,6 +644,14 @@ final class Config {
         if (chosenRows >= 0 && chosenRows <= 3) rowsBelow = chosenRows;
         animations = choices.getBoolean("animations", animations);
         advancedEffects = choices.getBoolean("advanced_effects", advancedEffects);
+        // The fork's Banners row wins over a theme or config.xml unless it is left on "full".
+        String bannerMode = choices.getString(BANNER_MODE_KEY, BANNER_MODE_FULL);
+        if (BANNER_MODE_LEAN.equals(bannerMode)) {
+            banner565 = true;
+            bannerMaxDensity = 240;
+        } else if (BANNER_MODE_ICONS.equals(bannerMode)) {
+            uniformTiles = true;
+        }
         File wallpaper = dir != null ? new File(dir, WALLPAPER_NAME) : null;
         if (wallpaper != null && !(wallpaper.isFile() && wallpaper.length() > 0)) wallpaper = null;
         // A theme can also switch the wallpaper off while the file is still there.

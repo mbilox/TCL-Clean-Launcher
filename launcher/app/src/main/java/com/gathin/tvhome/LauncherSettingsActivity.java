@@ -15,6 +15,10 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,11 +41,15 @@ public final class LauncherSettingsActivity extends Activity {
     private TextView advancedChoice;
     private TextView followThemeChoice;
     private TextView openOnStartChoice;
+    private TextView modeChoice;
+    private TextView bannerChoice;
     private int columns;
     private int rowsBelowDock;
     private int dockOpacity;
     private boolean animations;
     private boolean advancedEffects;
+    private String mode;
+    private String bannerMode;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -49,6 +57,9 @@ public final class LauncherSettingsActivity extends Activity {
         setContentView(R.layout.activity_launcher_settings);
         choices = getSharedPreferences(Config.SETTINGS_NAME, MODE_PRIVATE);
         Config config = Config.load(this);
+        mode = normalizedMode(choices.getString(Config.MODE_KEY, Config.MODE_NORMAL));
+        bannerMode = normalizedBannerMode(choices.getString(Config.BANNER_MODE_KEY,
+                Config.BANNER_MODE_FULL));
         View reorderChoice = findViewById(R.id.reorderChoice);
         reorderChoice.setVisibility(config.launcherSettingsButton ? View.VISIBLE : View.GONE);
         reorderChoice.setOnClickListener(v -> {
@@ -61,6 +72,12 @@ public final class LauncherSettingsActivity extends Activity {
         animations = config.animations;
         advancedEffects = config.animations && config.advancedEffects;
 
+        // The two fork rows come first: the preset mode, then the banner look it does not overwrite.
+        modeChoice = findViewById(R.id.modeChoice);
+        modeChoice.setOnClickListener(v -> applyMode(Config.MODE_MAX.equals(mode)
+                ? Config.MODE_NORMAL : Config.MODE_MAX));
+        bannerChoice = findViewById(R.id.bannerChoice);
+        bannerChoice.setOnClickListener(v -> setBannerMode(nextBannerMode(bannerMode)));
         int[] ids = {R.id.columns4, R.id.columns5, R.id.columns6, R.id.columns7};
         for (int i = 0; i < ids.length; i++) {
             final int value = i + 4;
@@ -140,13 +157,10 @@ public final class LauncherSettingsActivity extends Activity {
             if (!hasOnTvChoices()) return;
             choices.edit().remove("columns").remove(Config.ROWS_BELOW_DOCK_KEY).remove("animations")
                     .remove("advanced_effects").remove(Config.WALLPAPER_CHOICE_KEY)
-                    .remove(Config.DOCK_OPACITY_KEY).remove(OpenOnStart.KEY).commit();
-            Config current = Config.load(this);
-            columns = current.columns;
-            rowsBelowDock = current.rowsBelowDock;
-            dockOpacity = current.dockOpacity;
-            animations = current.animations;
-            advancedEffects = current.animations && current.advancedEffects;
+                    .remove(Config.DOCK_OPACITY_KEY).remove(OpenOnStart.KEY)
+                    .remove(Config.BANNER_MODE_KEY).commit();
+            bannerMode = Config.BANNER_MODE_FULL;
+            reload();
             changed();
             refresh();
         });
@@ -158,7 +172,70 @@ public final class LauncherSettingsActivity extends Activity {
                 open(SystemSettings.intent(this, Settings.ACTION_SETTINGS)));
         refresh();
         if (config.launcherSettingsButton) reorderChoice.requestFocus();
-        else columnChoices[Math.max(0, Math.min(columns - 4, 3))].requestFocus();
+        else modeChoice.requestFocus();
+    }
+
+    private static String normalizedMode(String value) {
+        return Config.MODE_MAX.equals(value) ? Config.MODE_MAX : Config.MODE_NORMAL;
+    }
+
+    private static String normalizedBannerMode(String value) {
+        return Config.BANNER_MODE_LEAN.equals(value) || Config.BANNER_MODE_ICONS.equals(value)
+                ? value : Config.BANNER_MODE_FULL;
+    }
+
+    private static String nextBannerMode(String value) {
+        if (Config.BANNER_MODE_FULL.equals(value)) return Config.BANNER_MODE_LEAN;
+        return Config.BANNER_MODE_LEAN.equals(value) ? Config.BANNER_MODE_ICONS : Config.BANNER_MODE_FULL;
+    }
+
+    /**
+     * Writes the picked preset over config.json the way a pushed theme does, then Home rebuilds on resume. The
+     * Banners row keeps its own value: it lives in launcher_settings, not in the preset.
+     */
+    private void applyMode(String next) {
+        if (!writePreset(next)) {
+            Toast.makeText(this, R.string.mode_failed, Toast.LENGTH_LONG).show();
+            return;
+        }
+        mode = next;
+        choices.edit().putString(Config.MODE_KEY, next).apply();
+        reload();
+        changed();
+        refresh();
+        Toast.makeText(this, R.string.mode_applied, Toast.LENGTH_SHORT).show();
+    }
+
+    private boolean writePreset(String next) {
+        File dir = Config.dir(this);
+        if (dir == null || (!dir.isDirectory() && !dir.mkdirs())) return false;
+        int resource = Config.MODE_MAX.equals(next) ? R.raw.tcl_max : R.raw.tcl_normal;
+        try (InputStream in = getResources().openRawResource(resource);
+             OutputStream out = new FileOutputStream(new File(dir, Config.FILE_NAME))) {
+            byte[] buffer = new byte[4096];
+            int read;
+            while ((read = in.read(buffer)) > 0) out.write(buffer, 0, read);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    private void setBannerMode(String next) {
+        bannerMode = next;
+        choices.edit().putString(Config.BANNER_MODE_KEY, next).apply();
+        changed();
+        refresh();
+    }
+
+    /** Reads the settings the preset just changed back into this screen. */
+    private void reload() {
+        Config current = Config.load(this);
+        columns = current.columns;
+        rowsBelowDock = current.rowsBelowDock;
+        dockOpacity = current.dockOpacity;
+        animations = current.animations;
+        advancedEffects = current.animations && current.advancedEffects;
     }
 
     private void reverseRow(TextView[] views) {
@@ -277,6 +354,12 @@ public final class LauncherSettingsActivity extends Activity {
     }
 
     private void refresh() {
+        modeChoice.setText(getString(R.string.mode_state, getString(
+                Config.MODE_MAX.equals(mode) ? R.string.mode_max : R.string.mode_normal)));
+        bannerChoice.setText(getString(R.string.banner_state, getString(
+                Config.BANNER_MODE_LEAN.equals(bannerMode) ? R.string.banner_lean
+                        : Config.BANNER_MODE_ICONS.equals(bannerMode) ? R.string.banner_icons
+                        : R.string.banner_full)));
         for (int i = 0; i < columnChoices.length; i++) {
             columnChoices[i].setSelected(columns == i + 4);
         }
@@ -305,7 +388,8 @@ public final class LauncherSettingsActivity extends Activity {
         return choices.contains("columns") || choices.contains(Config.ROWS_BELOW_DOCK_KEY)
                 || choices.contains("animations") || choices.contains("advanced_effects")
                 || choices.contains(Config.WALLPAPER_CHOICE_KEY) || choices.contains(Config.DOCK_OPACITY_KEY)
-                || choices.contains(OpenOnStart.KEY);
+                || choices.contains(OpenOnStart.KEY)
+                || Config.BANNER_MODE_LEAN.equals(bannerMode) || Config.BANNER_MODE_ICONS.equals(bannerMode);
     }
 
     private void open(Intent intent) {

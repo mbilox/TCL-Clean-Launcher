@@ -42,6 +42,15 @@
     <string name="storage_gb_decimal">%1$.1f GB</string>
     <string name="dream_name">Reloj</string>
     <string name="launcher_settings">Ajustes del lanzador</string>
+    <string name="mode_state">Modo: %1$s</string>
+    <string name="mode_normal">Normal</string>
+    <string name="mode_max">Máxima optimización</string>
+    <string name="mode_applied">Modo aplicado</string>
+    <string name="mode_failed">No se pudo aplicar el modo</string>
+    <string name="banner_state">Banners: %1$s</string>
+    <string name="banner_full">Completos</string>
+    <string name="banner_lean">Ahorro de memoria</string>
+    <string name="banner_icons">Solo iconos</string>
     <string name="native_settings">Ajustes del fabricante</string>
     <string name="columns_label">Aplicaciones por fila</string>
     <string name="dock_opacity_label">Opacidad de la barra del dock</string>

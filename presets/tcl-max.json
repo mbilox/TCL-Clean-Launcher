@@ -1,0 +1,18 @@
+{
+  "animations": false,
+  "reduced_motion": true,
+  "focus_overshoot": false,
+  "cinematic_home": false,
+  "cinematic_art": 0,
+  "cinematic_scrim": 0,
+  "cinematic_dots": false,
+  "app_glow": false,
+  "ambient_glow": false,
+  "fade_rows": false,
+  "clock_glow": false,
+  "wallpaper": false,
+  "sky_intensity": 0,
+  "always_show_names": true,
+  "banner_565": true,
+  "banner_density": 240
+}

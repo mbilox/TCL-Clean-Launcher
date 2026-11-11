@@ -98,6 +98,15 @@
 
     <!-- Launcher settings, quick settings panel, race-weekend panel and cinematic shelf. -->
     <string name="launcher_settings">Configurações do launcher</string>
+    <string name="mode_state">Modo: %1$s</string>
+    <string name="mode_normal">Normal</string>
+    <string name="mode_max">Otimização máxima</string>
+    <string name="mode_applied">Modo aplicado</string>
+    <string name="mode_failed">Não foi possível aplicar o modo</string>
+    <string name="banner_state">Banners: %1$s</string>
+    <string name="banner_full">Completos</string>
+    <string name="banner_lean">Economia de memória</string>
+    <string name="banner_icons">Somente ícones</string>
     <string name="native_settings">Configurações do fabricante</string>
     <string name="columns_label">Apps por fileira</string>
     <string name="dock_opacity_label">Opacidade da faixa do dock</string>
