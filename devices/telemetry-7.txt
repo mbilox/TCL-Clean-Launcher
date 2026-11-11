@@ -1,0 +1,8 @@
+com.tcl.bi
+com.tcl.tv.tclhome_passive
+com.tcl.waterfall.overseas
+com.tcl.messagebox
+com.google.android.partnersetup
+com.google.android.feedback
+# com.tcl.guard is EXCLUDED: it owns the virtual-search channel of the BT remote (FINDINGS #16);
+# disabling it kills the remote mic's AudioRecord fallback and with it the assistant.
