@@ -75,7 +75,7 @@ this tree: add its row only when the log lands.
 ## Comparativa triple del primer release (2026-11-11, mismo día y protocolo)
 
 Todos medidos con `tools/bench-launcher.sh` en esta unidad (BeyondTV2 AR05), mismos minutos,
-fork = release candidate 1 (APK 364.219 B, SHA `55030ab8...`, modo Normal/Máx según la fila).
+fork = release candidate 1 (APK 364.219 B; SHA final del build instalado `c780e3105a5b4a556fe0c147ebb9c9bc42f92930c74ae351d3abf62dea07a463`, con el fix del botón de Ajustes; los benches corrieron sobre el build previo `55030ab8...`, idéntico salvo esa llave).
 Crudo: `bench-results/bench-*-{fork-release-normal,fork-release-max2,compare-eddy,compare-upstream-v30}-20261111-*`.
 
 | Métrica | Fork — Máx | Fork — Normal | Eddy 0.6.0 | Upstream v3.0 |
