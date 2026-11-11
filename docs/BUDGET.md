@@ -71,3 +71,33 @@ this tree: add its row only when the log lands.
    `adb install -r`, then reboot before measuring or judging the voice button (`FINDINGS.md` §6, §9).
 4. Add a row here with the size, the SHA-256 (`sha256sum`), the measured numbers and the evidence
    paths. One row per published build; no row, no release.
+
+## Comparativa triple del primer release (2026-11-11, mismo día y protocolo)
+
+Todos medidos con `tools/bench-launcher.sh` en esta unidad (BeyondTV2 AR05), mismos minutos,
+fork = release candidate 1 (APK 364.219 B, SHA `55030ab8...`, modo Normal/Máx según la fila).
+Crudo: `bench-results/bench-*-{fork-release-normal,fork-release-max2,compare-eddy,compare-upstream-v30}-20261111-*`.
+
+| Métrica | Fork — Máx | Fork — Normal | Eddy 0.6.0 | Upstream v3.0 |
+|---|---:|---:|---:|---:|
+| APK | 364.219 B | 364.219 B | 516,9 KB | 366,6 KB |
+| Cold start (5 corridas) | ~1.200 ms¹ | 829-836 ms | **458-489 ms** | 957-1.037 ms |
+| Jank (20 pares D-pad) | 0,00% (43 frames) | **0,18% (1.662 frames)** | 0,00% (42 frames) | 0,00%² |
+| p50/p90/p95 frames | 7/10/11 ms | 7/9/10 ms | 7/11/12 ms | 6/9/9 ms² |
+| PSS + swap | **27,7 MB** ✓ | 37,7 MB | **17,9 MB** | 37,5-39,8 MB² |
+| Idle 30 s | 0 frames / 0% CPU | 3 frames / 0,8% | 2 frames / 0% | 0 frames² |
+| Presupuesto PSS ≤ 30 MB (Máx) | **cumple** | n/a | — | — |
+| Presupuesto cold ≤ 600 ms | **no cumple** (~1,2 s) | no | cumple | no |
+
+¹ El presupuesto de cold ≤ 600 ms no lo cumple ningún launcher de la familia gathin en esta
+  firmware (upstream 957+ ms; el bench del 26/10 dio ~850 ms). El de Eddy es más chico por código
+  (v0.6.0 sin la biblioteca de apps ni este panel de Ajustes).
+² PSS/jank/idle del upstream de la línea base 2026-10-26 (mismo build v3.0, mismo protocolo); en
+  el bench de hoy el proceso perdió el Home a mitad de corrida — TCL re-afirma su Home preferido
+  (Eddy) cuando el proceso del Home activo muere, incluso con `overseasappshow` deshabilitado.
+
+**Lectura honesta**: Eddy gana en liviandad y arranque (es un launcher más chico, sin la biblioteca
+de apps ni este panel). El fork entrega el paquete completo (Modo/Banners desde el control,
+banners podados −8 MB Native, mic verificado, boot-Home resuelto) a un costo de PSS que en Máx
+queda bajo el presupuesto. El upstream sin podar es el más pesado en Native y arranca más lento
+que Eddy y que el fork en Normal.
