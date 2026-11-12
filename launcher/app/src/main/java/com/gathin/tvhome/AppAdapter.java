@@ -23,7 +23,9 @@ import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.net.Uri;
+import android.os.Looper;
 import android.provider.Settings;
+import android.util.Log;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -47,6 +49,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.IOException;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -677,16 +681,27 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * The Continue watching content cards: the TV provider's watch_next_program rows, newest first. Empty when
      * the provider cannot be read (no READ_TV_LISTINGS) or publishes nothing, so the row is app recents only.
      */
+    /** Diagnostics for the continue-watching row: row count, cards built, and every poster failure. */
+    static final String WATCH_TAG = "WatchRowDebug";
+
     private List<Entry> contentEntries() {
         List<Entry> entries = new ArrayList<>();
         PackageManager pm = ctx.getPackageManager();
+        List<WatchNext.Item> rows = WatchNext.load(ctx, System.currentTimeMillis());
+        Log.i(WATCH_TAG, "reload: provider rows=" + rows.size());
         // Only the row's worth (WatchNext.MAX_ITEMS): surplus published rows must not fill the grid up.
-        for (WatchNext.Item item : WatchNext.load(ctx, System.currentTimeMillis())) {
+        for (WatchNext.Item item : rows) {
             if (entries.size() == WatchNext.MAX_ITEMS) break;
             // A publisher row without a name is unusable: no label, no card.
-            if (item.title == null || item.title.isEmpty()) continue;
+            if (item.title == null || item.title.isEmpty()) {
+                Log.i(WATCH_TAG, "card dropped: untitled row");
+                continue;
+            }
             Intent deepLink = deepLink(item.intentUri);
-            if (deepLink == null) continue;
+            if (deepLink == null) {
+                Log.i(WATCH_TAG, "card dropped: unparsable link " + item.intentUri);
+                continue;
+            }
             // The resolver and a random browser are never the answer: the card binds the row's publisher
             // (falls back to that app's launcher, drops the card when neither opens; see WatchNext.openable).
             Intent link = deepLink;
@@ -815,6 +830,16 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * A content card's poster, decoded no wider than {@link #POSTER_MAX_W} in RGB_565 (the same memory care as
      * {@link #decodeBanner}). null on any failure: the tile then shows the fallback of a bannerless tile.
      */
+    /**
+     * Poster art lives in a disk cache keyed by the art URL: the apps publish signed CDN URLs that
+     * expire within hours, so the copy we already fetched keeps the card dressed after the URL dies.
+     * I/O only ever runs on the poster pool (the catch path skips it on the main thread).
+     */
+    private File posterFile(String uri) {
+        File dir = new File(ctx.getCacheDir(), "posters");
+        return new File(dir, Integer.toHexString(uri.hashCode()) + ".jpg");
+    }
+
     private Drawable poster(String uri) {
         if (uri == null || uri.isEmpty()) return null;
         Drawable cached = POSTERS.get(uri);
@@ -838,10 +863,40 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 bitmap = BitmapFactory.decodeStream(in, null, options);
             }
             Drawable drawable = bitmap != null ? new BitmapDrawable(ctx.getResources(), bitmap) : null;
-            if (drawable != null) POSTERS.put(uri, drawable);
+            if (drawable != null) {
+                POSTERS.put(uri, drawable);
+                try {
+                    File file = posterFile(uri);
+                    file.getParentFile().mkdirs();
+                    try (FileOutputStream out = new FileOutputStream(file)) {
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 85, out);
+                    }
+                } catch (IOException disk) {
+                    Log.i(WATCH_TAG, "poster disk-save FAILED: " + disk);
+                }
+                Log.i(WATCH_TAG, "poster ok: " + uri);
+            } else {
+                Log.i(WATCH_TAG, "poster empty (server answered, no image): " + uri);
+            }
             return drawable;
-        } catch (IOException | RuntimeException ignored) {
-            return null;
+        } catch (IOException | RuntimeException e) {
+            // The published URL expired (signed CDN links live for hours, the row can outlive it):
+            // fall back to the copy we already fetched, when it is legal to touch the disk at all.
+            Log.i(WATCH_TAG, "poster FAILED (" + e.getClass().getSimpleName() + "): " + uri);
+            if (Looper.myLooper() == Looper.getMainLooper()) return null;
+            try {
+                File file = posterFile(uri);
+                if (!file.isFile()) return null;
+                Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                if (bitmap == null) return null;
+                Drawable drawable = new BitmapDrawable(ctx.getResources(), bitmap);
+                POSTERS.put(uri, drawable);
+                Log.i(WATCH_TAG, "poster recovered from disk cache: " + uri);
+                return drawable;
+            } catch (RuntimeException disk) {
+                Log.i(WATCH_TAG, "poster disk-cache read FAILED: " + disk);
+                return null;
+            }
         }
     }
 

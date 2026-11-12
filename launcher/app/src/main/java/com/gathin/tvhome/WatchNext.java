@@ -4,7 +4,18 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -22,6 +33,10 @@ final class WatchNext {
     static final int MAX_ITEMS = 8;
     /** Rows older than this are stale (the owner's unit still has 2022 "Flow" rows published). */
     static final long MAX_AGE = 60L * 24 * 60 * 60 * 1000;
+    /** A successful load is snapshotted; the snapshot feeds the row for this long (see load's catch). */
+    static final long SNAPSHOT_AGE = 7L * 24 * 60 * 60 * 1000;
+    /** Diagnostics: the row's own tag shares AppAdapter's, so one filter sees the whole story. */
+    static final String TAG = "WatchRowDebug";
 
     // Spelled out as a string, not a Uri: the class must load in a plain JVM test (WatchNextTest) too.
     private static final String WATCH_NEXT = "content://android.media.tv/watch_next_program";
@@ -78,11 +93,16 @@ final class WatchNext {
                         intentUri, cursor.getString(5), cursor.getLong(6), cursor.getLong(7),
                         cursor.getLong(4)));
             }
-            return recent(found, now);
-        } catch (Exception ignored) {
+            List<Item> recent = recent(found, now);
+            if (!recent.isEmpty()) saveSnapshot(ctx, recent, now);   // the provider worked: remember it
+            return recent;
+        } catch (Exception e) {
             // SecurityException without the permission, IllegalArgumentException when no provider answers,
             // and anything else a vendor's TvProvider throws: the row degrades, Home still starts.
-            return new ArrayList<>();
+            List<Item> snapshot = loadSnapshot(ctx, now);
+            if (!snapshot.isEmpty()) Log.i(TAG, "provider read FAILED (" + e + "): serving "
+                    + snapshot.size() + " snapshot rows");
+            return snapshot;
         } finally {
             if (cursor != null) {
                 try {
@@ -91,6 +111,63 @@ final class WatchNext {
                 }
             }
         }
+    }
+
+    /** The snapshot file: rows the launcher itself saw, so a broken provider (firmware schema bug)
+     *  still shows what was last watched. Writes are best-effort and never throw into load(). */
+    private static File snapshotFile(Context ctx) {
+        return new File(ctx.getFilesDir(), "watch_next_snapshot.json");
+    }
+
+    private static void saveSnapshot(Context ctx, List<Item> items, long now) {
+        try {
+            JSONArray array = new JSONArray();
+            for (Item item : items) {
+                JSONObject row = new JSONObject();
+                row.put("title", item.title);
+                row.put("episode", item.episodeTitle == null ? "" : item.episodeTitle);
+                row.put("poster", item.posterUri == null ? "" : item.posterUri);
+                row.put("link", item.intentUri);
+                row.put("pkg", item.packageName == null ? "" : item.packageName);
+                row.put("pos", item.positionMillis);
+                row.put("dur", item.durationMillis);
+                row.put("when", item.lastEngagement);
+                array.put(row);
+            }
+            JSONObject snapshot = new JSONObject();
+            snapshot.put("savedAt", now);
+            snapshot.put("rows", array);
+            try (FileOutputStream out = new FileOutputStream(snapshotFile(ctx))) {
+                out.write(snapshot.toString().getBytes(StandardCharsets.UTF_8));
+            }
+        } catch (JSONException | IOException | RuntimeException e) {
+            Log.i(TAG, "snapshot save FAILED: " + e);
+        }
+    }
+
+    /** The last snapshot the launcher itself recorded, no older than {@link #SNAPSHOT_AGE}; empty list
+     *  when there is none (or it is too old): the row then shows nothing, as without a provider. */
+    static List<Item> loadSnapshot(Context ctx, long now) {
+        List<Item> items = new ArrayList<>();
+        try (InputStream in = new FileInputStream(snapshotFile(ctx))) {
+            java.io.ByteArrayOutputStream buffer = new java.io.ByteArrayOutputStream();
+            byte[] chunk = new byte[4096];
+            int read;
+            while ((read = in.read(chunk)) >= 0) buffer.write(chunk, 0, read);
+            JSONObject snapshot = new JSONObject(new String(buffer.toByteArray(), StandardCharsets.UTF_8));
+            long savedAt = snapshot.getLong("savedAt");
+            if (now - savedAt > SNAPSHOT_AGE) return items;
+            JSONArray rows = snapshot.getJSONArray("rows");
+            for (int i = 0; i < rows.length(); i++) {
+                JSONObject row = rows.getJSONObject(i);
+                items.add(new Item(row.optString("title"), row.optString("episode"),
+                        row.optString("poster"), row.optString("link"), row.optString("pkg"),
+                        row.optLong("pos"), row.optLong("dur"), row.optLong("when")));
+            }
+        } catch (IOException | JSONException | RuntimeException e) {
+            // No snapshot (first run, cleared storage, corrupt file): the row simply stays empty.
+        }
+        return items;
     }
 
     /**
