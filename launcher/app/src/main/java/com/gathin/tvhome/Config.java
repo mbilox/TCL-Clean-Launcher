@@ -67,6 +67,14 @@ final class Config {
     static final String FOLLOW_ROW_ON = "on";
     static final String FOLLOW_ROW_OFF = "off";
     /**
+     * Fork-only: whether the Continue watching row also shows the CONTENT the owner was watching (the TV
+     * provider's published watch-next rows) before the app tiles it opened from Home. "off" keeps the row to
+     * app recents only (see LauncherSettingsActivity).
+     */
+    static final String WATCH_NEXT_KEY = "watch_next";
+    static final String WATCH_NEXT_ON = "on";
+    static final String WATCH_NEXT_OFF = "off";
+    /**
      * Fork-only: the preset applied last from Launcher settings, "normal" or "max". The preset itself lives in
      * config.json; this key only remembers which one the row shows.
      */
@@ -210,6 +218,8 @@ final class Config {
     final boolean inputsConnectedOnly;
     /** Continue watching row: the first grid row shows the apps opened most recently from Home. */
     final boolean followRow;
+    /** Continue watching row: its content cards from the TV provider's published watch-next rows. */
+    final boolean watchNext;
     /** The Settings button opens the quick settings panel instead of the TV's Settings (settings_key_panel). */
     final boolean settingsKeyPanel;
     /** Home puts the remote's accessibility helpers back after a force stop (restore_key_services; ServiceRepair). */
@@ -308,7 +318,7 @@ final class Config {
                    List<RaceWeekend.Race> raceCalendar, boolean cinematicHome, boolean ambientGlow, boolean appGlow, boolean fadeRows, int homeIdleClockMinutes,
                    boolean keyFilter, boolean dockGlass, String glowStyle, boolean wallpaperCaptions,
                    boolean handleViewInputs, boolean tileMenu, boolean dockEvenPadding, boolean dockBand, boolean cinematicDots, boolean cinematicWhiteFocus, boolean wifiStatusColor, int cinematicScrim, int cinematicArt,
-                   Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean powerOnHome, boolean homeLongPressHome, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset, boolean dateBelowClock, boolean vpnPill, String locale, boolean powerOnHomeAlways, boolean inputsConnectedOnly, boolean followRow) {
+                   Map<String, Set<String>> wallpaperMoods, boolean gamepadPassthrough, boolean consumeVolumeKeys, boolean powerOnHome, boolean homeLongPressHome, boolean wifiStatusWarnings, List<String> topBarApps, boolean showGreeting, boolean headerWhite, boolean clockWallpaper, int clockWallpaperDim, boolean clockGlow, String glassStyle, boolean singleRow, boolean dockBandAll, boolean lunarDate, int lunarUtcOffset, boolean dateBelowClock, boolean vpnPill, String locale, boolean powerOnHomeAlways, boolean inputsConnectedOnly, boolean followRow, boolean watchNext) {
         this.handleViewInputs = handleViewInputs;
         this.tileMenu = tileMenu;
         this.inputKeycodes = inputKeycodes;
@@ -407,6 +417,7 @@ final class Config {
         this.powerOnHomeAlways = powerOnHomeAlways;
         this.inputsConnectedOnly = inputsConnectedOnly;
         this.followRow = followRow;
+        this.watchNext = watchNext;
         this.wifiStatusWarnings = wifiStatusWarnings;
         this.topBarApps = Collections.unmodifiableList(topBarApps);
         this.showGreeting = showGreeting;
@@ -682,6 +693,8 @@ final class Config {
             idleClockMinutes = 0;
         // The Continue watching row: "off" restores the plain alphabetical grid.
         boolean followRow = !FOLLOW_ROW_OFF.equals(choices.getString(FOLLOW_ROW_KEY, FOLLOW_ROW_ON));
+        // The content cards of that row: its own switch, so the app recents can stay without them.
+        boolean watchNext = !WATCH_NEXT_OFF.equals(choices.getString(WATCH_NEXT_KEY, WATCH_NEXT_ON));
         File wallpaper = dir != null ? new File(dir, WALLPAPER_NAME) : null;
         if (wallpaper != null && !(wallpaper.isFile() && wallpaper.length() > 0)) wallpaper = null;
         // A theme can also switch the wallpaper off while the file is still there.
@@ -728,7 +741,7 @@ final class Config {
                 dockBand, cinematicDots, cinematicWhiteFocus, wifiStatusColor, cinematicScrim, cinematicArt, wallpaperMoods, gamepadPassthrough,
                 consumeVolumeKeys, powerOnHome, homeLongPressHome, wifiStatusWarnings, topBarApps, showGreeting, headerWhite, clockWallpaper,
                 Math.max(0, Math.min(90, clockWallpaperDim)), clockGlow, glassStyle, singleRow && dockRow, dockBandAll, lunar, lunarOffset,
-                dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly, followRow);
+                dateBelowClock, vpnPill, locale, powerOnHomeAlways, inputsConnectedOnly, followRow, watchNext);
     }
 
     /**

@@ -115,6 +115,7 @@
     <string name="idle_google_hint">O nosso relógio para. Escolha o fundo do Google como protetor de tela do sistema (Configurações → Preferências do dispositivo → Protetor de tela) e quando ele começa.</string>
     <string name="open_screensaver_settings">Abrir protetor de tela</string>
     <string name="follow_row_state">Continuar assistindo: %1$s</string>
+    <string name="watch_next_state">Visto recentemente: %1$s</string>
     <string name="native_settings">Configurações do fabricante</string>
     <string name="columns_label">Apps por fileira</string>
     <string name="dock_opacity_label">Opacidade da faixa do dock</string>

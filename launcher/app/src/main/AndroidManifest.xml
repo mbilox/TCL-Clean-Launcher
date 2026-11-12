@@ -8,6 +8,9 @@
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Watch-next card art: the streaming apps publish posters as https URLs; normal permission,
+         granted at install, fetched off the main thread with a cache (AppAdapter.POSTERS). -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <!-- Needed since Android 10 to read the Wi-Fi network name for the network pill. Never requested at
          runtime: build-and-install grants it with pm grant, so lint's Android 12 "ask for COARSE with
@@ -21,6 +24,9 @@
     <!-- YaOS (Yandex TV OS): HDMI, AV and the tuner all play in com.yandex.tv.live, whose activities require
          this permission (protection level normal, so it is granted at install). Ignored on other TVs. -->
     <uses-permission android:name="yandex.tv.permission.ACCESS_TV_SOURCE" />
+    <!-- Watch next programs published by streaming apps (TvProvider). Runtime: granted with pm grant by
+         build-and-install, like the two above; the row degrades gracefully when apps publish nothing. -->
+    <uses-permission android:name="android.permission.READ_TV_LISTINGS" />
 
     <!-- Android 11+ package visibility: lets the launcher list the TV apps it shows as tiles, and the
          apps that declare a module card (docs/specs/card.md). -->
@@ -186,6 +192,15 @@
             android:excludeFromRecents="true"
             android:noHistory="true"
             android:taskAffinity=""
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <!-- One-shot diagnostic over adb (am start): dumps the TV provider's watch-next and preview
+             rows to logcat. Not reachable from the UI. exported while the diagnosis runs. -->
+        <activity
+            android:name=".WatchNextProbeActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <!-- Screensaver: pick it in Settings, or `settings put secure screensaver_components

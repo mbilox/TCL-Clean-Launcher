@@ -65,6 +65,7 @@
     <string name="idle_google_hint">Our own clock stops. Choose Google\'s backdrop as the system screensaver (Settings → Device preferences → Screen saver) and set when it starts.</string>
     <string name="open_screensaver_settings">Open screensaver settings</string>
     <string name="follow_row_state">Continue watching: %1$s</string>
+    <string name="watch_next_state">Recently watched: %1$s</string>
     <string name="native_settings">Native settings</string>
     <string name="columns_label">Apps per row</string>
     <string name="rows_below_dock_label">Rows below dock</string>

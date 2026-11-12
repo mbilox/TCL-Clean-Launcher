@@ -54,6 +54,8 @@ public final class LauncherSettingsActivity extends Activity {
     private String idleClock;
     private TextView followRowChoice;
     private boolean followRow;
+    private TextView watchNextChoice;
+    private boolean watchNext;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -92,6 +94,15 @@ public final class LauncherSettingsActivity extends Activity {
             followRow = !followRow;
             choices.edit().putString(Config.FOLLOW_ROW_KEY,
                     followRow ? Config.FOLLOW_ROW_ON : Config.FOLLOW_ROW_OFF).apply();
+            changed();
+            refresh();
+        });
+        watchNextChoice = findViewById(R.id.watchNextChoice);
+        watchNext = !Config.WATCH_NEXT_OFF.equals(choices.getString(Config.WATCH_NEXT_KEY, Config.WATCH_NEXT_ON));
+        watchNextChoice.setOnClickListener(v -> {
+            watchNext = !watchNext;
+            choices.edit().putString(Config.WATCH_NEXT_KEY,
+                    watchNext ? Config.WATCH_NEXT_ON : Config.WATCH_NEXT_OFF).apply();
             changed();
             refresh();
         });
@@ -402,6 +413,8 @@ public final class LauncherSettingsActivity extends Activity {
                 Config.IDLE_CLOCK_GOOGLE.equals(idleClock) ? R.string.idle_google : R.string.idle_ours)));
         followRowChoice.setText(getString(R.string.follow_row_state,
                 getString(followRow ? R.string.on : R.string.off)));
+        watchNextChoice.setText(getString(R.string.watch_next_state,
+                getString(watchNext ? R.string.on : R.string.off)));
         for (int i = 0; i < columnChoices.length; i++) {
             columnChoices[i].setSelected(columns == i + 4);
         }

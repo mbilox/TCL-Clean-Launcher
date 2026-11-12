@@ -39,14 +39,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
 
 /**
  * App tiles. The first {@link MainActivity#COLUMNS} positions are the pinned dock (favourites, fixed order,
@@ -75,8 +80,19 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final String label;
         final ComponentName component;
         final String pkg;
-        final Drawable banner;
+        /** Posters land off the main thread: mutable, the tile rebinds when its art arrives. */
+        Drawable banner;
         final Drawable icon;
+        /**
+         * Continue watching content card: the published deep link its tile opens. null is an ordinary tile,
+         * which launches its component through {@link #launch(Entry)}; such entries are not app tiles, so
+         * they never enter the recents map and never count as docked.
+         */
+        final Intent launch;
+        /** When the content card was last watched (0 for app tiles): the follow row's order across reloads. */
+        final long lastEngagement;
+        /** The content card's art location, fetched off the main thread when it is an https URL. */
+        final String posterUri;
         /** Text under the tile when it is focused in the grid: the label, plus the caption for a card. */
         final String name;
         /** Ambient glow colour; 0 until sampled from the banner, or the card's accent from the start. */
@@ -89,16 +105,34 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         Entry(int kind, String label, ComponentName component, Drawable banner, Drawable icon, String caption, int accent) {
+            this(kind, label, component, banner, icon, caption, accent, null, 0L);
+        }
+
+        Entry(int kind, String label, ComponentName component, Drawable banner, Drawable icon, String caption, int accent,
+              Intent launch, long lastEngagement) {
+            this(kind, label, component, banner, icon, caption, accent, launch, lastEngagement, null);
+        }
+
+        Entry(int kind, String label, ComponentName component, Drawable banner, Drawable icon, String caption, int accent,
+              Intent launch, long lastEngagement, String posterUri) {
             this.kind = kind;
             this.label = label;
             this.component = component;
             this.pkg = component.getPackageName();
             this.banner = banner;
             this.icon = icon;
+            this.launch = launch;
+            this.lastEngagement = lastEngagement;
+            this.posterUri = posterUri;
             this.name = caption == null ? label : label + " \u00B7 " + caption;
             this.ambient = accent;
         }
     }
+
+    /** Package the follow row gives a content card whose deep link names no installed app. */
+    static final String WATCH_NEXT_PKG = "watch_next";
+    /** Widest poster a content card decodes at: the tile is smaller, the rest would only cost native heap. */
+    static final int POSTER_MAX_W = 480;
 
     static final float FOCUS_SCALE = 1.10f;
     /** Design size of a tile (dp); tiles shrink from here when the columns don't fit, see tileWidthPx. */
@@ -182,6 +216,17 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /** Current Continue watching row: its packages, newest first, and when each was opened (read per reload). */
     private List<String> followRowPkgs = Collections.emptyList();
     private Map<String, Long> openedByPkg = Collections.emptyMap();
+    /** Poster art the watch-next cards decoded, keyed by its URI: a rebuild must not refetch the network. */
+    private static final Map<String, Drawable> POSTERS = Collections.synchronizedMap(
+            new LinkedHashMap<String, Drawable>(16, 0.75f, true) {
+                @Override
+                protected boolean removeEldestEntry(Map.Entry<String, Drawable> eldest) {
+                    return size() > 32;
+                }
+            });
+    /** Posters land off the main thread; one worker is enough for a row's worth of art. */
+    private final java.util.concurrent.ExecutorService posterPool = Executors.newSingleThreadExecutor();
+    private final android.os.Handler mainHandler = new android.os.Handler(android.os.Looper.getMainLooper());
     /** Dock size recorded with the saved order (Order.docked), or -1: then dock_apps says which tiles are docked. */
     private int savedDocked = -1;
     /** Reorder mode: no empty dock slots, so every position holds a tile that can move. */
@@ -230,6 +275,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final int bannerMaxDensity;
     /** Continue watching: the first grid row shows the apps opened most recently from Home (config follow_row). */
     private final boolean followRow;
+    /** Continue watching: that row starts with the content the owner was watching (settings watch_next). */
+    private final boolean watchNext;
     /** Packages drawn from their icon and name even when they have a banner (config.xml icon_tiles). */
     private final Set<String> iconTiles;
     /**
@@ -268,6 +315,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.banner565 = cfg.banner565;
         this.bannerMaxDensity = cfg.bannerMaxDensity;
         this.followRow = cfg.followRow;
+        this.watchNext = cfg.watchNext;
         final float density = ctx.getResources().getDisplayMetrics().density;
         this.cardOutline = new ViewOutlineProvider() {
             @Override
@@ -339,6 +387,13 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 fresh.add(new Entry(label, component, banner, icon));
             }
         }
+        // Continue watching: the content cards are ordinary entries, so the follow row places them with the
+        // app tiles; they are appended here, before refreshFollowRow reads the recents those tiles carry.
+        if (followRow && watchNext) {
+            List<Entry> content = contentEntries();
+            fresh.addAll(content);
+            fetchMissingPosters(content);
+        }
         refreshFollowRow(fresh);
         Collections.sort(fresh, (a, b) -> {
             // The owner's own order first; tiles it does not know (new installs) follow by the rule below.
@@ -369,7 +424,12 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             fresh.add(docked + i, new Entry(Entry.EMPTY, "", new ComponentName(ctx, "empty-dock-slot-" + i),
                     null, null, null, 0));
         }
-        if (followRow) placeFollowRow(fresh, followRowStart(), openedByPkg, dockSize);
+        if (followRow) {
+            int start = followRowStart();
+            // Content cards take the first slots of the row, app recents fill the ones left over.
+            int content = placeContentRow(fresh, start, dockSize);
+            placeFollowRow(fresh, start + content, openedByPkg, dockSize - content);
+        }
         items.clear();
         items.addAll(fresh);
         notifyDataSetChanged();
@@ -380,6 +440,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         Map<String, Long> opened = new HashMap<>();
         if (!followRow) return opened;
         for (Entry e : tiles) {
+            // Content cards are not app tiles: their package must not collide with that app's own tile.
+            if (e.launch != null) continue;
             if (e.kind != Entry.APP || favourites.contains(e.pkg)) continue;
             if (savedRanks.containsKey(e.component.flattenToShortString())) continue;
             long when = LastOpened.get(ctx, e.pkg);
@@ -402,21 +464,49 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return ((docked + emptySlots + dockSize - 1) / dockSize) * dockSize;
     }
 
-    /** Moves the Continue watching tiles to the row at {@code start}, newest first, others shifting right. */
-    private static void placeFollowRow(List<Entry> tiles, int start, Map<String, Long> opened, int rowSize) {
-        if (start >= tiles.size() || opened.isEmpty()) return;
-        List<Entry> row = new ArrayList<>();
+    /**
+     * Moves the Continue watching content cards to the row at {@code start}, newest first, and returns how many
+     * it placed so the app tiles can fill the slots after them. The dock band keeps the first {@code start}
+     * non-card tiles of the base order (favourites, then the module cards and grid tiles that fill it) — a
+     * content card never takes a band slot, whatever the alphabetical order would have said.
+     */
+    private static int placeContentRow(List<Entry> tiles, int start, int rowSize) {
+        if (start >= tiles.size() || rowSize <= 0) return 0;
+        List<Entry> band = new ArrayList<>(), cards = new ArrayList<>(), rest = new ArrayList<>();
         for (Entry e : tiles) {
-            if (row.size() == rowSize) break;
-            if (opened.containsKey(e.pkg)) row.add(e);
+            if (e.launch != null) cards.add(e);
+            else if (band.size() < start) band.add(e);
+            else rest.add(e);
+        }
+        // Newest first; the sort is stable, so equal stamps keep the provider's order.
+        cards.sort((x, y) -> Long.compare(y.lastEngagement, x.lastEngagement));
+        while (cards.size() > rowSize) rest.add(0, cards.remove(cards.size() - 1));
+        tiles.clear();
+        tiles.addAll(band);
+        tiles.addAll(cards);
+        tiles.addAll(rest);
+        return cards.size();
+    }
+
+    /**
+     * Moves the Continue watching tiles to the row at {@code start}, newest first, the same zone rule as
+     * {@link #placeContentRow}: the dock band keeps exactly the tiles it had.
+     */
+    private static void placeFollowRow(List<Entry> tiles, int start, Map<String, Long> opened, int rowSize) {
+        if (start >= tiles.size() || opened.isEmpty() || rowSize <= 0) return;
+        List<Entry> zone = new ArrayList<>(tiles.subList(0, start));
+        List<Entry> row = new ArrayList<>(), rest = new ArrayList<>();
+        for (int i = start; i < tiles.size(); i++) {
+            Entry e = tiles.get(i);
+            // A content card sharing its package with a docked app's tile is not that app.
+            if (e.launch != null || row.size() == rowSize || !opened.containsKey(e.pkg)) rest.add(e);
+            else row.add(e);
         }
         row.sort((x, y) -> Long.compare(opened.get(y.pkg), opened.get(x.pkg)));
-        int at = start;
-        for (Entry e : row) {
-            tiles.remove(e);
-            tiles.add(Math.min(at, tiles.size()), e);
-            at++;
-        }
+        tiles.clear();
+        tiles.addAll(zone);
+        tiles.addAll(row);
+        tiles.addAll(rest);
     }
 
     /**
@@ -426,7 +516,9 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      */
     boolean applyFollowRow() {
         if (!followRow || items.isEmpty() || !refreshFollowRow(items)) return false;
-        placeFollowRow(items, followRowStart(), openedByPkg, dockSize);
+        int start = followRowStart();
+        int content = placeContentRow(items, start, dockSize);
+        placeFollowRow(items, start + content, openedByPkg, dockSize - content);
         notifyDataSetChanged();
         return true;
     }
@@ -495,6 +587,122 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } catch (IOException | Resources.NotFoundException ignored) {
             return null;
         }
+    }
+
+    /**
+     * The Continue watching content cards: the TV provider's watch_next_program rows, newest first. Empty when
+     * the provider cannot be read (no READ_TV_LISTINGS) or publishes nothing, so the row is app recents only.
+     */
+    private List<Entry> contentEntries() {
+        List<Entry> entries = new ArrayList<>();
+        // Only the row's worth: surplus published rows must not sink into the alphabetical grid.
+        for (WatchNext.Item item : WatchNext.load(ctx, System.currentTimeMillis())) {
+            if (entries.size() == dockSize) break;
+            // A publisher row without a name is unusable: no label, no card.
+            if (item.title == null || item.title.isEmpty()) continue;
+            Intent deepLink = deepLink(item.intentUri);
+            if (deepLink == null) continue;
+            String pkg = targetPackage(deepLink);
+            // Same separator as Entry.name (the caption line under a focused tile).
+            String label = item.episodeTitle == null || item.episodeTitle.isEmpty()
+                    ? item.title : item.title + " \u00B7 " + item.episodeTitle;
+            // The deep link is the card's identity: several rows carry one app's package.
+            ComponentName component = new ComponentName(pkg, item.intentUri);
+            entries.add(new Entry(Entry.APP, label, component, poster(item.posterUri), null, null, 0,
+                    deepLink, item.lastEngagement, item.posterUri));
+        }
+        return entries;
+    }
+
+    /** The intent a content card opens, already carrying NEW_TASK so Home can start it; null if the URI gives none. */
+    private static Intent deepLink(String uri) {
+        try {
+            Intent intent = uri.startsWith("intent:")
+                    ? Intent.parseUri(uri, Intent.URI_INTENT_SCHEME)
+                    : new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+            return intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        } catch (URISyntaxException | RuntimeException ignored) {
+            return null;
+        }
+    }
+
+    /** The app a content card belongs to: the deep link's package, else the app that handles it, else none. */
+    private String targetPackage(Intent launch) {
+        if (launch.getPackage() != null) return launch.getPackage();
+        if (launch.getComponent() != null) return launch.getComponent().getPackageName();
+        ResolveInfo resolved = ctx.getPackageManager().resolveActivity(launch, 0);
+        if (resolved != null && resolved.activityInfo != null) return resolved.activityInfo.packageName;
+        return WATCH_NEXT_PKG;
+    }
+
+    /**
+     * A content card's poster, decoded no wider than {@link #POSTER_MAX_W} in RGB_565 (the same memory care as
+     * {@link #decodeBanner}). null on any failure: the tile then shows the fallback of a bannerless tile.
+     */
+    private Drawable poster(String uri) {
+        if (uri == null || uri.isEmpty()) return null;
+        Drawable cached = POSTERS.get(uri);
+        if (cached != null) return cached;
+        try {
+            Uri source = Uri.parse(uri);
+            BitmapFactory.Options size = new BitmapFactory.Options();
+            size.inJustDecodeBounds = true;
+            try (InputStream in = posterStream(source)) {
+                if (in == null) return null;
+                BitmapFactory.decodeStream(in, null, size);
+            }
+            int sample = 1;
+            while (size.outWidth > 0 && size.outWidth / sample > POSTER_MAX_W) sample *= 2;
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.RGB_565;
+            options.inSampleSize = sample;
+            Bitmap bitmap;
+            try (InputStream in = posterStream(source)) {
+                if (in == null) return null;
+                bitmap = BitmapFactory.decodeStream(in, null, options);
+            }
+            Drawable drawable = bitmap != null ? new BitmapDrawable(ctx.getResources(), bitmap) : null;
+            if (drawable != null) POSTERS.put(uri, drawable);
+            return drawable;
+        } catch (IOException | RuntimeException ignored) {
+            return null;
+        }
+    }
+
+    /** The poster's bytes: the provider's own streams, plus the http(s) art the apps publish as URLs. */
+    private InputStream posterStream(Uri source) throws IOException {
+        String scheme = source.getScheme() == null ? "" : source.getScheme();
+        if (scheme.startsWith("http")) {
+            HttpURLConnection connection = (HttpURLConnection) new URL(source.toString()).openConnection();
+            connection.setConnectTimeout(4000);
+            connection.setReadTimeout(8000);
+            return connection.getInputStream();
+        }
+        return ctx.getContentResolver().openInputStream(source);
+    }
+
+    /**
+     * Fetches the watch-next cards' posters off the main thread (https art cannot decode on it) and
+     * refreshes the row when they land. Cached art never reaches the pool, so a rebuild is instant.
+     */
+    private void fetchMissingPosters(List<Entry> cards) {
+        List<Entry> missing = new ArrayList<>();
+        for (Entry e : cards) {
+            if (e.banner == null && e.posterUri != null && !e.posterUri.isEmpty()
+                    && !POSTERS.containsKey(e.posterUri)) missing.add(e);
+        }
+        if (missing.isEmpty()) return;
+        posterPool.execute(() -> {
+            boolean arrived = false;
+            for (Entry e : missing) {
+                Drawable art = poster(e.posterUri);
+                if (art != null) {
+                    e.banner = art;
+                    arrived = true;
+                }
+            }
+            if (arrived) mainHandler.post(this::notifyDataSetChanged);
+        });
     }
 
     /**
@@ -639,11 +847,24 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         });
     }
 
-    /** Opens the tile's activity by explicit component, with no extras: a card can name nothing else. */
+    /** Opens the tile: a content card its published deep link, every other tile its activity by component. */
     private void launch(Entry e) {
         if (e.kind == Entry.HOME_SETTINGS) {
             ctx.startActivity(new Intent(ctx, HomeSettingsActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            return;
+        }
+        if (e.launch != null) {
+            try {
+                ctx.startActivity(e.launch);
+                // A card with no installed app behind it has no history to record.
+                if (!WATCH_NEXT_PKG.equals(e.pkg)) LastOpened.record(ctx, e.pkg);
+                if (advancedEffects && !reducedMotion && ctx instanceof Activity) {
+                    ((Activity) ctx).overridePendingTransition(R.anim.app_open_enter, R.anim.app_open_exit);
+                }
+            } catch (Exception ex) {
+                Toast.makeText(ctx, ctx.getString(R.string.cant_open, e.label), Toast.LENGTH_SHORT).show();
+            }
             return;
         }
         Intent i = new Intent(Intent.ACTION_MAIN)
@@ -703,6 +924,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      * the owner moved into the dock stays there (#499); else a dock_apps entry.
      */
     private boolean isDocked(Entry e) {
+        // A content card never holds a dock slot, whatever package its deep link resolved to.
+        if (e.launch != null) return false;
         if (savedDocked < 0) return favourites.contains(e.pkg);
         Integer rank = savedRanks.get(e.component.flattenToShortString());
         return rank != null && rank < savedDocked;
