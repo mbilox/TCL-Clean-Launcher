@@ -20,7 +20,12 @@ public class WatchNextTest {
     }
 
     private static WatchNext.Item item(String title, String publisher, long when) {
-        return new WatchNext.Item(title, null, null, "https://example.test/" + title, publisher, when);
+        return item(title, publisher, when, 0, 0);
+    }
+
+    private static WatchNext.Item item(String title, String publisher, long when, long position, long duration) {
+        return new WatchNext.Item(title, null, null, "https://example.test/" + title, publisher,
+                position, duration, when);
     }
 
     private static List<WatchNext.Item> items(WatchNext.Item... list) {
@@ -115,6 +120,22 @@ public class WatchNextTest {
     public void applessRowDropsTheCard() {
         assertNull(WatchNext.openable(new Object(), null, "publisher.test",
                 pkg -> null, pkg -> null));
+    }
+
+    /** The progress bar: only with a real position and duration, clamped to 0-100; -1 means no bar. */
+
+    @Test
+    public void progressNeedsBothPositionAndDuration() {
+        assertEquals(-1, WatchNext.progress(0L, 90_000L));
+        assertEquals(-1, WatchNext.progress(-1L, 90_000L));
+        assertEquals(-1, WatchNext.progress(500L, 0L));
+    }
+
+    @Test
+    public void progressIsPercentAndClamps() {
+        assertEquals(42, WatchNext.progress(37_800L, 90_000L));
+        assertEquals(100, WatchNext.progress(180_000L, 90_000L));
+        assertEquals(1, WatchNext.progress(900L, 90_000L));
     }
 
     @Test

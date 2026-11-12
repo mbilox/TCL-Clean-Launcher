@@ -27,7 +27,7 @@ final class WatchNext {
     private static final String WATCH_NEXT = "content://android.media.tv/watch_next_program";
     private static final String[] COLUMNS = {
             "title", "episode_title", "poster_art_uri", "intent_uri", "last_engagement_time_utc_millis",
-            "package_name"};
+            "package_name", "last_watched_position_millis", "duration_millis"};
 
     private WatchNext() {
     }
@@ -41,14 +41,19 @@ final class WatchNext {
         final long lastEngagement;
         /** The app that published the row: the card binds its deep link to it, never to a resolver. */
         final String packageName;
+        /** Playback state the row publishes: the card's progress bar uses both; -1/0 means no bar. */
+        final long positionMillis;
+        final long durationMillis;
 
         Item(String title, String episodeTitle, String posterUri, String intentUri,
-             String packageName, long lastEngagement) {
+             String packageName, long positionMillis, long durationMillis, long lastEngagement) {
             this.title = title;
             this.episodeTitle = episodeTitle;
             this.posterUri = posterUri;
             this.intentUri = intentUri;
             this.packageName = packageName;
+            this.positionMillis = positionMillis;
+            this.durationMillis = durationMillis;
             this.lastEngagement = lastEngagement;
         }
     }
@@ -70,7 +75,8 @@ final class WatchNext {
                 if (intentUri == null || intentUri.isEmpty()) continue;
                 String title = cursor.getString(0);
                 found.add(new Item(title == null ? "" : title, cursor.getString(1), cursor.getString(2),
-                        intentUri, cursor.getString(5), cursor.getLong(4)));
+                        intentUri, cursor.getString(5), cursor.getLong(6), cursor.getLong(7),
+                        cursor.getLong(4)));
             }
             return recent(found, now);
         } catch (Exception ignored) {
@@ -103,6 +109,16 @@ final class WatchNext {
         if (linkPackage != null && !linkPackage.isEmpty()) return link;
         L result = bound.apply(publisher);
         return result != null ? result : launcher.apply(publisher);
+    }
+
+    /**
+     * Pure rule for the card's progress bar: percent of the row's playback, clamped to 0-100; -1 when
+     * either side is missing (a row with no position published, or nothing left to progress).
+     */
+    static int progress(long positionMillis, long durationMillis) {
+        if (positionMillis <= 0 || durationMillis <= 0) return -1;
+        long percent = positionMillis * 100 / durationMillis;
+        return percent > 100 ? 100 : (int) percent;
     }
 
     /**

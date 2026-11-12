@@ -20,8 +20,14 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RoundRectShape;
 import android.net.Uri;
 import android.provider.Settings;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
+import android.text.style.ImageSpan;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.KeyEvent;
@@ -37,6 +43,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.IOException;
@@ -73,6 +80,12 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         /** Hold OK on a tile: the activity shows the tile menu (move, remove from Home, app info). */
         void onTileLongPress(int position, View card);
         void onLibraryUp();
+        /** Focus landed on a card of the Continue watching row: it is no grid tile, so nothing tracks it there. */
+        void onWatchRowFocused();
+        /** Up from that row: back to the dock, or the top bar when the row is the first line on screen. */
+        void onWatchRowUp();
+        /** Down from that row: the first grid row under it, or the App library when nothing follows. */
+        void onWatchRowDown();
     }
 
     static final class Entry {
@@ -97,8 +110,12 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final String posterUri;
         /** Text under the tile when it is focused in the grid: the label, plus the caption for a card. */
         final String name;
-        /** The app chip worn on a content card's poster (its icon over a dark plate); null on plain tiles. */
-        Drawable badge;
+        /** A content card's two-line caption (title, then the app's small icon + name); null on plain tiles. */
+        CharSequence detail;
+        /** The card's app name: the badge line is rebuilt with it when the title line must be cut. */
+        String appName;
+        /** Percent of the row's playback (0-100 from the provider); 0 means no progress bar on the poster. */
+        int progressPct;
         /** Ambient glow colour; 0 until sampled from the banner, or the card's accent from the start. */
         int ambient;
         /** uniform_tiles card fill, top and bottom colour; null until sampled from the icon. */
@@ -289,6 +306,49 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      */
     private final ViewOutlineProvider cardOutline;
     private final List<Entry> items = new ArrayList<>();
+    /**
+     * The Continue watching cards, newest first: the sideways row draws them instead of the grid (the single
+     * row keeps them as ordinary tiles, where a nested sideways row has nowhere to go).
+     */
+    private final List<Entry> contentCards = new ArrayList<>();
+    /** Adapter position of that sideways row, or -1 when it is not shown. See {@link WatchRow}. */
+    private int watchRowPos = -1;
+
+    /** getItemViewType: a grid tile, the App library row, the Continue watching row. */
+    static final int TYPE_TILE = 0, TYPE_LIBRARY = 1, TYPE_WATCH_ROW = 2;
+    /** Gap between two cards of the sideways row: the slot is wider than the card and the card stays centred. */
+    static final float ROW_CARD_GAP_DP = 12f;
+
+    /**
+     * The sideways row's cards report through the same {@link TileListener} as a tile: their position is the
+     * card's place in the row, and Up/Down leave the row instead of running through the grid.
+     */
+    private final TileListener rowTiles = new TileListener() {
+        @Override public void onTileFocused(int index, View card) {
+            listener.onWatchRowFocused();
+        }
+
+        @Override public boolean onTileVerticalKey(int index, int keyCode) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                listener.onWatchRowUp();
+                return true;
+            }
+            if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                listener.onWatchRowDown();
+                return true;
+            }
+            // Left/Right walk the cards, the row scrolling the focused one in; only its two ends are walled off.
+            return keyCode == KeyEvent.KEYCODE_DPAD_RIGHT ? index >= contentCards.size() - 1 : index == 0;
+        }
+
+        @Override public void onLibraryRequested() { }
+        @Override public void onLibraryFocused() { }
+        @Override public void onTileLongPress(int index, View card) { }
+        @Override public void onLibraryUp() { }
+        @Override public void onWatchRowFocused() { }
+        @Override public void onWatchRowUp() { }
+        @Override public void onWatchRowDown() { }
+    };
 
     AppAdapter(Context ctx, TileListener listener, int dockSize, Config cfg) {
         this.ctx = ctx;
@@ -391,12 +451,20 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 fresh.add(new Entry(label, component, banner, icon));
             }
         }
-        // Continue watching: the content cards are ordinary entries, so the follow row places them with the
-        // app tiles; they are appended here, before refreshFollowRow reads the recents those tiles carry.
+        // Continue watching: sideways in its own row when the grid has columns, inline in the single row.
+        contentCards.clear();
         if (followRow && watchNext) {
             List<Entry> content = contentEntries();
-            fresh.addAll(content);
-            fetchMissingPosters(content);
+            if (singleRow) {
+                // Inline: the content cards are ordinary entries, so the follow row places them with the app tiles.
+                fresh.addAll(content);
+                fetchMissingPosters(content);
+            } else {
+                // Newest first; the sort is stable, so equal stamps keep the provider's order.
+                content.sort((x, y) -> Long.compare(y.lastEngagement, x.lastEngagement));
+                contentCards.addAll(content);
+                fetchMissingPosters(contentCards);
+            }
         }
         refreshFollowRow(fresh);
         Collections.sort(fresh, (a, b) -> {
@@ -428,11 +496,19 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             fresh.add(docked + i, new Entry(Entry.EMPTY, "", new ComponentName(ctx, "empty-dock-slot-" + i),
                     null, null, null, 0));
         }
+        watchRowPos = -1;
         if (followRow) {
             int start = followRowStart();
-            // Content cards take the first slots of the row, app recents fill the ones left over.
-            int content = placeContentRow(fresh, start, dockSize);
-            placeFollowRow(fresh, start + content, openedByPkg, dockSize - content);
+            if (singleRow) {
+                // Content cards take the first slots of the row, app recents fill the ones left over.
+                int content = placeContentRow(fresh, start, dockSize);
+                placeFollowRow(fresh, start + content, openedByPkg, dockSize - content);
+            } else {
+                // The sideways row is one full-width item where the cards used to be, and the app recents keep
+                // the grid row under it.
+                watchRowPos = WatchRow.position(start, fresh.size(), !contentCards.isEmpty());
+                placeFollowRow(fresh, start, openedByPkg, dockSize);
+            }
         }
         items.clear();
         items.addAll(fresh);
@@ -521,8 +597,12 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     boolean applyFollowRow() {
         if (!followRow || items.isEmpty() || !refreshFollowRow(items)) return false;
         int start = followRowStart();
-        int content = placeContentRow(items, start, dockSize);
-        placeFollowRow(items, start + content, openedByPkg, dockSize - content);
+        if (singleRow) {
+            int content = placeContentRow(items, start, dockSize);
+            placeFollowRow(items, start + content, openedByPkg, dockSize - content);
+        } else {
+            placeFollowRow(items, start, openedByPkg, dockSize);
+        }
         notifyDataSetChanged();
         return true;
     }
@@ -600,9 +680,9 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<Entry> contentEntries() {
         List<Entry> entries = new ArrayList<>();
         PackageManager pm = ctx.getPackageManager();
-        // Only the row's worth: surplus published rows must not sink into the alphabetical grid.
+        // Only the row's worth (WatchNext.MAX_ITEMS): surplus published rows must not fill the grid up.
         for (WatchNext.Item item : WatchNext.load(ctx, System.currentTimeMillis())) {
-            if (entries.size() == dockSize) break;
+            if (entries.size() == WatchNext.MAX_ITEMS) break;
             // A publisher row without a name is unusable: no label, no card.
             if (item.title == null || item.title.isEmpty()) continue;
             Intent deepLink = deepLink(item.intentUri);
@@ -628,19 +708,21 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     ? item.title : item.title + " \u00B7 " + item.episodeTitle;
             // The deep link is the card's identity: several rows carry one app's package.
             ComponentName component = new ComponentName(pkg, item.intentUri);
-            // The card says whose content it is: the app's icon as the tile, a chip on its poster,
-            // and the app's name under the focus line.
+            // The card says whose content it is in its two-line caption under the tile (image →
+            // title → app badge, like the platform's ImageCardView) — never a chip over the poster.
             Drawable appIcon = null;
             try {
                 appIcon = pm.getApplicationIcon(pkg);
             } catch (Exception ignored) {
             }
-            Drawable chip = cardChip(appIcon);
-            Drawable art = poster(item.posterUri);
-            if (art != null && chip != null) art = badged(art, chip);
-            Entry entry = new Entry(Entry.APP, label, component, art, appIcon, appLabel(pkg), 0,
+            Entry entry = new Entry(Entry.APP, label, component, poster(item.posterUri), appIcon, null, 0,
                     deepLink, item.lastEngagement, item.posterUri);
-            entry.badge = chip;
+            entry.progressPct = WatchNext.progress(item.positionMillis, item.durationMillis);
+            if (entry.banner != null && entry.progressPct > 0) {
+                entry.banner = withProgress(entry.banner, entry.progressPct);
+            }
+            entry.appName = appLabel(pkg);
+            entry.detail = detailCaption(label, appIcon, entry.appName);
             entries.add(entry);
         }
         return entries;
@@ -670,37 +752,53 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    /** The chip a content card wears on its poster: the app's icon over a dark rounded plate; null without an icon. */
-    private Drawable cardChip(Drawable icon) {
-        if (icon == null) return null;
+    /** A content card's caption: line 1 the title, line 2 the app (its small icon, then its name). */
+    private CharSequence detailCaption(String label, Drawable icon, String appName) {
+        SpannableStringBuilder detail = new SpannableStringBuilder(label);
+        if (appName == null || appName.isEmpty() || icon == null) return detail;
         float density = ctx.getResources().getDisplayMetrics().density;
-        int size = Math.round(28f * density);
+        int size = Math.round(18f * density);
+        Drawable badge = null;
         try {
-            Bitmap chip = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(chip);
-            Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            paint.setColor(0xCC000000);
-            canvas.drawRoundRect(0, 0, size, size, 7f * density, 7f * density, paint);
-            int pad = Math.round(4f * density);
-            icon.setBounds(pad, pad, size - pad, size - pad);
+            // A rasterized bitmap keeps the span at its fixed size: a raw (often adaptive) app icon
+            // does not shrink to the text line and buries the caption under a huge drawing.
+            Bitmap badgeBitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(badgeBitmap);
+            icon.setBounds(0, 0, size, size);
             icon.draw(canvas);
-            return new BitmapDrawable(ctx.getResources(), chip);
+            badge = new BitmapDrawable(ctx.getResources(), badgeBitmap);
+            // A fresh drawable has empty bounds: the image span draws exactly them, so set its own.
+            badge.setBounds(0, 0, size, size);
         } catch (RuntimeException ignored) {
-            return null;
+            return detail;
         }
+        detail.append('\n');   // line 2 starts under the title
+        int slot = detail.length();
+        detail.append('\uFFFC');
+        detail.setSpan(new ImageSpan(badge, ImageSpan.ALIGN_BASELINE), slot, slot + 1,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        detail.append(' ').append(appName);
+        return detail;
     }
 
-    /** The poster wearing the app chip on its bottom-left corner: a content card says whose content it is. */
-    private Drawable badged(Drawable poster, Drawable chip) {
+    /** The poster wearing its playback progress bar at the foot: only when the row publishes one. */
+    private Drawable withProgress(Drawable poster, int pct) {
         int w = poster.getIntrinsicWidth(), h = poster.getIntrinsicHeight();
-        int size = chip.getIntrinsicWidth();
-        if (w <= 0 || h <= 0 || size <= 0) return poster;
-        LayerDrawable layered = new LayerDrawable(new Drawable[]{poster, chip});
-        int inset = Math.round(6f * ctx.getResources().getDisplayMetrics().density);
-        // LayerDrawable draws each layer over the poster's whole bounds minus the insets: carve the
-        // chip's own square out, at the bottom-left corner, instead of stretching it to the poster.
-        layered.setLayerInset(1, inset, Math.max(0, h - size - inset),
-                Math.max(0, w - size - inset), inset);
+        if (w <= 0 || h <= 0 || pct <= 0 || pct > 100) return poster;
+        float density = ctx.getResources().getDisplayMetrics().density;
+        int bar = Math.round(8f * density), margin = Math.round(14f * density);
+        float radius = 4f * density;
+        float[] corners = {radius, radius, radius, radius, radius, radius, radius, radius};
+        ShapeDrawable track = new ShapeDrawable(new RoundRectShape(corners, null, null));
+        track.getPaint().setColor(0x59000000);
+        int fillW = Math.round((w - 2 * margin) * pct / 100f);
+        ShapeDrawable fill = new ShapeDrawable(new RoundRectShape(corners, null, null));
+        fill.getPaint().setColor(0xF2FFFFFF);
+        LayerDrawable layered = new LayerDrawable(new Drawable[]{poster, track, fill});
+        layered.setLayerInset(1, margin, h - bar - margin, margin, margin);
+        // LayerDrawable draws each layer over the poster's whole bounds minus the insets: the fill's
+        // right inset carves it down to the published percent, and never stretches it.
+        layered.setLayerInset(2, margin, h - bar - margin, Math.max(0, w - margin - fillW), margin);
         return layered;
     }
 
@@ -775,11 +873,16 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             for (Entry e : missing) {
                 Drawable art = poster(e.posterUri);
                 if (art != null) {
-                    e.banner = e.badge != null ? badged(art, e.badge) : art;
+                    e.banner = e.progressPct > 0 ? withProgress(art, e.progressPct) : art;
                     arrived = true;
                 }
             }
-            if (arrived) mainHandler.post(this::notifyDataSetChanged);
+            if (arrived) mainHandler.post(() -> {
+                notifyDataSetChanged();
+                // The sideways row's own adapter keys on the card list, and the list did not change:
+                // poster arrivals rebind it directly, or the row keeps its icon fallback forever.
+                if (rowAdapter != null) rowAdapter.notifyDataSetChanged();
+            });
         });
     }
 
@@ -794,13 +897,15 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /** Lets go of every tile and its artwork (Home is in the background and memory is short). */
     void clear() {
         items.clear();
+        contentCards.clear();
+        watchRowPos = -1;
         notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == 1) {
+        if (viewType == TYPE_LIBRARY) {
             View row = LayoutInflater.from(ctx).inflate(R.layout.row_app_library, parent, false);
             View button = row.findViewById(R.id.btnLibrary);
             button.setOnClickListener(v -> listener.onLibraryRequested());
@@ -813,11 +918,31 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             });
             return new RecyclerView.ViewHolder(row) { };
         }
+        if (viewType == TYPE_WATCH_ROW) {
+            // Continue watching: one full-width grid item holding a sideways row of the content cards.
+            View row = LayoutInflater.from(ctx).inflate(R.layout.row_watch_next, parent, false);
+            RecyclerView sideways = row.findViewById(R.id.watchRow);
+            sideways.setLayoutManager(new LinearLayoutManager(ctx, RecyclerView.HORIZONTAL, false));
+            sideways.setItemAnimator(null);
+            sideways.setAdapter(new RowAdapter());
+            return new RecyclerView.ViewHolder(row) { };
+        }
+        return createTile(parent, false);
+    }
+
+    /**
+     * One tile, laid out for the grid (row false) or for the sideways row. The row's slot is a card plus a gap
+     * wide, and the card stays centred in it, so two cards of the row keep the spacing of two grid tiles.
+     */
+    private Holder createTile(ViewGroup parent, boolean row) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_app, parent, false);
         float density = parent.getResources().getDisplayMetrics().density;
         int width = parent.getWidth() > 0 ? parent.getWidth() : parent.getMeasuredWidth();
         int inner = width - parent.getPaddingLeft() - parent.getPaddingRight();
-        int w = tileWidthPx(inner, parent.getHeight(), dockSize, rowsBelowDock, dockTitle, dockRow, density), h = tileHeightPx(w);
+        // The row has no dock band or rows under it to make room for: its cards take the width-only size.
+        int w = row ? tileWidthPx(inner, dockSize, density)
+                : tileWidthPx(inner, parent.getHeight(), dockSize, rowsBelowDock, dockTitle, dockRow, density);
+        int h = tileHeightPx(w);
         View card = v.findViewById(R.id.card);
         ViewGroup.LayoutParams cardLp = card.getLayoutParams();
         cardLp.width = w;
@@ -834,8 +959,14 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             v.setPadding(v.getPaddingLeft(), pad, v.getPaddingRight(), pad);
         }
         name.setLayoutParams(nameLp);
-        // A sideways row would stretch a match_parent item across the whole screen: give it a grid column's width.
-        if (singleRow) v.getLayoutParams().width = inner / dockSize;
+        if (row) {
+            ViewGroup.LayoutParams itemLp = v.getLayoutParams();
+            itemLp.width = w + Math.round(ROW_CARD_GAP_DP * density);
+            v.setLayoutParams(itemLp);
+        } else if (singleRow) {
+            // A sideways row would stretch a match_parent item across the whole screen: give it a grid column's width.
+            v.getLayoutParams().width = inner / dockSize;
+        }
         if (uniformTiles) {
             // tvOS-style tile: a large centred mark, no caption inside the card.
             View icon = v.findViewById(R.id.icon);
@@ -854,14 +985,29 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             View label = v.findViewById(R.id.label);
             label.setPadding(label.getPaddingLeft(), label.getPaddingTop(), label.getPaddingRight(), Math.round(4f * density));
         }
-        return new Holder(v, cardOutline, listener, animations, advancedEffects, reducedMotion, restNameAlpha, focusOvershoot);
+        return new Holder(v, cardOutline, row ? rowTiles : listener, animations, advancedEffects, reducedMotion,
+                restNameAlpha, focusOvershoot);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (isLibraryAt(position)) return;
+        if (isWatchRowAt(position)) {
+            bindWatchRow(holder.itemView);
+            return;
+        }
         Holder h = (Holder) holder;
-        Entry e = items.get(position);
+        int index = tileIndexAt(position);
+        // The dock has no labels, unless always_show_names asks for them (DockDecoration then makes room in the band).
+        // In a single row every tile is the dock's kind: the big title above names it.
+        bindTile(h, items.get(index), position, dockRow && (singleRow || index < dockSize));
+    }
+
+    /**
+     * Draws a tile's card, its caption and its deep link. {@code menuPosition} is the tile's adapter position
+     * for the tile menu; the row's cards pass -1, since a content card cannot be moved, docked or removed.
+     */
+    private void bindTile(Holder h, Entry e, int menuPosition, boolean dockKind) {
         if (e.kind == Entry.EMPTY) {
             // A free dock slot keeps its place in the row and the band, but shows nothing and takes no focus.
             h.card.setVisibility(View.INVISIBLE);
@@ -875,13 +1021,50 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         h.card.setVisibility(View.VISIBLE);
         h.card.setFocusable(true);
-        h.name.setText(e.name);
+        boolean card = e.kind == Entry.APP && e.launch != null;
+        if (card) {
+            // The card's caption is two lines (image → title → app badge, like the platform's
+            // ImageCardView) and always visible: knowing whose content it is must not need focus.
+            CharSequence caption = e.detail;
+            if (caption != null) {
+                // A long title must wrap into the badge line and hide the app: the title line is
+                // ellipsized to the tile's own width, and the caption is rebuilt whole from the
+                // stored app name (a subSequence join was losing the image span of the badge).
+                int nl = TextUtils.indexOf(caption, "\n");
+                if (nl > 0 && h.name.getLayoutParams().width > 0) {
+                    CharSequence title = TextUtils.ellipsize(caption.subSequence(0, nl),
+                            h.name.getPaint(), h.name.getLayoutParams().width,
+                            TextUtils.TruncateAt.END);
+                    if (title.length() != nl) {
+                        caption = detailCaption(title.toString(), e.icon, e.appName);
+                    }
+                }
+            }
+            h.name.setText(caption != null ? caption : e.name);
+            h.name.setSingleLine(false);
+            // The XML's single-line transformation method renders '\n' as a space; drop it or the
+            // two-line caption collapses into one running line.
+            h.name.setTransformationMethod(null);
+            h.name.setLines(2);
+            int two = Math.round(40f * ctx.getResources().getDisplayMetrics().density);
+            if (h.name.getLayoutParams().height != two) {
+                h.name.getLayoutParams().height = two;
+                h.name.requestLayout();
+            }
+            h.name.setAlpha(1f);
+        } else {
+            h.name.setText(e.name);
+            if (h.name.getMaxLines() != 1) {
+                h.name.setSingleLine(true);
+                h.name.getLayoutParams().height = h.nameHeight;
+                h.name.requestLayout();
+            }
+        }
         // The dock has no labels, unless always_show_names asks for them (DockDecoration then makes room in the band).
         // In a single row every tile is the dock's kind: the big title above names it.
-        boolean dockKind = dockRow && (singleRow || position < dockSize);
         h.name.setVisibility(dockKind && restNameAlpha == 0f ? View.INVISIBLE : View.VISIBLE);
         boolean focused = h.card.isFocused();   // a rebind after reload() can hit the focused tile
-        h.name.setAlpha(focused ? 1f : restNameAlpha);
+        if (!card) h.name.setAlpha(focused ? 1f : restNameAlpha);
         h.card.setScaleX(focused && animations ? focusScale() : 1f);
         h.card.setScaleY(focused && animations ? focusScale() : 1f);
         h.card.setTranslationY(focused && advancedEffects ? -4f * ctx.getResources().getDisplayMetrics().density : 0f);
@@ -892,7 +1075,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         // nothing on every frame; keep it under banners with transparent parts and under icon tiles.
         h.card.setBackground(e.banner != null && e.banner.getOpacity() == PixelFormat.OPAQUE ? null : h.cardBackground);
         if (uniformTiles && e.banner == null) {
-            if (e.backdrop == null) e.backdrop = backdrop(e.icon, ambientColorAt(position));
+            if (e.backdrop == null) e.backdrop = backdrop(e.icon, ambientOf(e));
             h.card.setBackground(new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, e.backdrop));
         }
         if (e.banner != null) {
@@ -903,16 +1086,20 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } else {
             h.banner.setImageDrawable(null);
             h.banner.setVisibility(View.GONE);
-            h.icon.setImageDrawable(e.icon);
-            h.icon.setVisibility(View.VISIBLE);
+            // A content card with no poster stays a clean tile: its app already lives in the badge
+            // under the tile, and a big centred icon would read the card as an app tile.
+            h.icon.setImageDrawable(card ? null : e.icon);
+            h.icon.setVisibility(card ? View.GONE : View.VISIBLE);
             h.label.setText(e.label);
-            h.label.setVisibility(uniformTiles ? View.GONE : View.VISIBLE);
+            // A content card says whose content it is in its two-line caption below the tile: the
+            // tile's own label would read the same title twice while the poster is on its way.
+            h.label.setVisibility(uniformTiles || card ? View.GONE : View.VISIBLE);
         }
         h.card.setOnClickListener(v -> launch(e));
         h.card.setOnLongClickListener(v -> {
-            if (tileMenu) {
-                int pos = h.getBindingAdapterPosition();
-                if (pos != RecyclerView.NO_POSITION) listener.onTileLongPress(pos, v);
+            // A content card is no tile: with the tile menu on it keeps the app-info answer of every other case.
+            if (tileMenu && menuPosition >= 0) {
+                listener.onTileLongPress(menuPosition, v);
                 return true;
             }
             Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + e.pkg));
@@ -923,6 +1110,65 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
             return true;
         });
+    }
+
+    /**
+     * Puts focus on the sideways row's first, newest card, given the grid's holder for the row item; false when
+     * the row has not been laid out yet (the caller focuses it once it has).
+     */
+    boolean focusRowFirstCard(RecyclerView.ViewHolder rowHolder) {
+        if (rowHolder == null) return false;
+        RecyclerView sideways = rowHolder.itemView.findViewById(R.id.watchRow);
+        View card = sideways == null ? null : sideways.getChildAt(0);
+        return card != null && card.requestFocus();
+    }
+
+    /** Puts the current content cards in the sideways row and keeps it on its first card. */
+    private void bindWatchRow(View row) {
+        RecyclerView sideways = row.findViewById(R.id.watchRow);
+        RowAdapter adapter = (RowAdapter) sideways.getAdapter();
+        if (adapter == null) sideways.setAdapter(rowAdapter = adapter = new RowAdapter());
+        if (adapter.submit(contentCards)) sideways.scrollToPosition(0);
+    }
+
+    /** The sideways row's live adapter: poster arrivals must rebind it (an outer notify rebinds the header). */
+    private RowAdapter rowAdapter;
+
+    /**
+     * The sideways row's own adapter: the same cards the grid drew, as many as the provider published (up to
+     * {@link WatchNext#MAX_ITEMS}). Its positions are card indices, which is what {@link #rowTiles} reads.
+     */
+    private final class RowAdapter extends RecyclerView.Adapter<Holder> {
+        private final List<Entry> shown = new ArrayList<>();
+        private List<String> keys = Collections.emptyList();
+
+        /** Takes the new cards; true when the row changed (it then goes back to its first card). */
+        boolean submit(List<Entry> next) {
+            List<String> nextKeys = new ArrayList<>();
+            for (Entry e : next) nextKeys.add(e.component.flattenToShortString());
+            if (nextKeys.equals(keys)) return false;
+            keys = nextKeys;
+            shown.clear();
+            shown.addAll(next);
+            notifyDataSetChanged();
+            return true;
+        }
+
+        @NonNull
+        @Override
+        public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            return createTile(parent, true);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull Holder holder, int position) {
+            bindTile(holder, shown.get(position), -1, false);
+        }
+
+        @Override
+        public int getItemCount() {
+            return shown.size();
+        }
     }
 
     /** Opens the tile: a content card its published deep link, every other tile its activity by component. */
@@ -972,14 +1218,49 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return items.size() + (showLibrary ? 1 : 0);
+        return tileRows() + (showLibrary ? 1 : 0);
     }
+
+    /** Adapter positions of the tiles plus the Continue watching row, before the App library row. */
+    private int tileRows() { return items.size() + (watchRowPos >= 0 ? 1 : 0); }
 
     int appCount() { return items.size(); }
 
-    boolean isLibraryAt(int position) { return showLibrary && position == items.size(); }
+    /** Adapter position of the Continue watching row, or -1 when it is not shown. */
+    int watchRowPosition() { return watchRowPos; }
 
-    @Override public int getItemViewType(int position) { return isLibraryAt(position) ? 1 : 0; }
+    boolean isWatchRowAt(int position) { return watchRowPos >= 0 && position == watchRowPos; }
+
+    /** The row takes the whole width: in the grid it is one item across every column, like the App library. */
+    boolean isFullSpan(int position) { return isWatchRowAt(position) || isLibraryAt(position); }
+
+    int libraryPosition() { return showLibrary ? tileRows() : -1; }
+
+    boolean isLibraryAt(int position) { return showLibrary && position == tileRows(); }
+
+    /** True when the App library pill follows the last tile (it is then where Left/Right and Down leave to). */
+    boolean libraryFollows() { return showLibrary; }
+
+    /** The tile at an adapter position: every tile at or after the row sits one place further. */
+    int tileIndexAt(int position) { return WatchRow.tileIndex(position, watchRowPos); }
+
+    int adapterPositionOf(int tileIndex) { return WatchRow.adapterPosition(tileIndex, watchRowPos); }
+
+    /** True when the Continue watching row's own line is directly above/below the tile at this adapter position. */
+    boolean watchRowAbove(int position) {
+        return WatchRow.rowAbove(tileIndexAt(position), watchRowPos, dockSize);
+    }
+
+    boolean watchRowBelow(int position) {
+        return WatchRow.rowBelow(tileIndexAt(position), watchRowPos, dockSize);
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (isWatchRowAt(position)) return TYPE_WATCH_ROW;
+        if (isLibraryAt(position)) return TYPE_LIBRARY;
+        return TYPE_TILE;
+    }
 
     boolean containsPackage(String pkg) {
         for (Entry entry : items) if (entry.pkg.equals(pkg)) return true;
@@ -988,7 +1269,9 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public long getItemId(int position) {
-        return isLibraryAt(position) ? Long.MIN_VALUE : items.get(position).component.flattenToShortString().hashCode();
+        if (isLibraryAt(position)) return Long.MIN_VALUE;
+        if (isWatchRowAt(position)) return Long.MIN_VALUE + 1;
+        return items.get(tileIndexAt(position)).component.flattenToShortString().hashCode();
     }
 
     /** Uses this saved order and dock size from the next reload() (Order.ranks, Order.docked). */
@@ -1092,7 +1375,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /** A vivid colour sampled from the app's banner (or icon), cached per entry; a card's accent when it set one. */
     int ambientColorAt(int position) {
         if (position < 0 || position >= items.size()) return 0xFF444444;
-        Entry e = items.get(position);
+        return ambientOf(items.get(position));
+    }
+
+    private int ambientOf(Entry e) {
         if (e.ambient == 0) {
             e.ambient = uniformTiles && e.banner == null ? dominantColor(e.icon) : vividColor(e.banner != null ? e.banner : e.icon);
         }
@@ -1301,6 +1587,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final ImageView icon;
         final TextView label;
         final TextView name;
+        /** The name height onCreateViewHolder laid out (per density and dock row): tiles restore it. */
+        final int nameHeight;
         final boolean animations;
         final boolean advancedEffects;
         final boolean reducedMotion;
@@ -1317,6 +1605,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             icon = v.findViewById(R.id.icon);
             label = v.findViewById(R.id.label);
             name = v.findViewById(R.id.name);
+            nameHeight = name.getLayoutParams().height;
             this.animations = animations;
             this.advancedEffects = advancedEffects;
             this.reducedMotion = reducedMotion;
