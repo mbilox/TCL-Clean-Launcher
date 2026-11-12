@@ -52,6 +52,14 @@ final class Config {
     static final String BANNER_MODE_LEAN = "lean";
     static final String BANNER_MODE_ICONS = "icons";
     /**
+     * Fork-only: which clock Home shows when it sits idle. "ours" keeps the theme's home_idle_clock_minutes;
+     * "google" stops our own clock so the screensaver the user picked in the system (Google's backdrop)
+     * takes over on idle (see LauncherSettingsActivity).
+     */
+    static final String IDLE_CLOCK_KEY = "idle_clock";
+    static final String IDLE_CLOCK_OURS = "ours";
+    static final String IDLE_CLOCK_GOOGLE = "google";
+    /**
      * Fork-only: the preset applied last from Launcher settings, "normal" or "max". The preset itself lives in
      * config.json; this key only remembers which one the row shows.
      */
@@ -657,6 +665,11 @@ final class Config {
             banner565 = false;
             bannerMaxDensity = 0;
         }
+        // The fork's Idle clock row is another absolute choice: "google" hands idle time to the system
+        // screensaver (the user picks Google's backdrop there), so our own clock never starts. "ours"
+        // keeps the theme's home_idle_clock_minutes.
+        if (IDLE_CLOCK_GOOGLE.equals(choices.getString(IDLE_CLOCK_KEY, IDLE_CLOCK_OURS)))
+            idleClockMinutes = 0;
         File wallpaper = dir != null ? new File(dir, WALLPAPER_NAME) : null;
         if (wallpaper != null && !(wallpaper.isFile() && wallpaper.length() > 0)) wallpaper = null;
         // A theme can also switch the wallpaper off while the file is still there.

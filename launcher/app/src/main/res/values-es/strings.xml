@@ -42,7 +42,7 @@
     <string name="storage_gb_whole">%1$.0f GB</string>
     <string name="storage_gb_decimal">%1$.1f GB</string>
     <string name="dream_name">Reloj</string>
-    <string name="launcher_settings">Ajustes del lanzador</string>
+    <string name="launcher_settings">Ajustes</string>
     <string name="mode_state">Modo: %1$s</string>
     <string name="mode_normal">Normal</string>
     <string name="mode_max">Máxima optimización</string>
@@ -52,6 +52,12 @@
     <string name="banner_full">Completos</string>
     <string name="banner_lean">Ahorro de memoria</string>
     <string name="banner_icons">Solo iconos</string>
+    <string name="idle_clock_state">Reloj de reposo: %1$s</string>
+    <string name="idle_clock_label">Reloj de reposo</string>
+    <string name="idle_ours">Optimizado</string>
+    <string name="idle_google">Google (fondo)</string>
+    <string name="idle_google_hint">Nuestro reloj deja de correr. Elige el fondo de Google como protector de pantalla del sistema (Ajustes → Preferencias del dispositivo → Protector de pantalla) y cuándo arranca.</string>
+    <string name="open_screensaver_settings">Abrir protector de pantalla</string>
     <string name="native_settings">Ajustes del fabricante</string>
     <string name="columns_label">Aplicaciones por fila</string>
     <string name="dock_opacity_label">Opacidad de la barra del dock</string>

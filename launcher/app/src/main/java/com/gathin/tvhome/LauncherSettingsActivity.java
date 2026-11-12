@@ -50,6 +50,8 @@ public final class LauncherSettingsActivity extends Activity {
     private boolean advancedEffects;
     private String mode;
     private String bannerMode;
+    private TextView idleClockChoice;
+    private String idleClock;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -78,6 +80,10 @@ public final class LauncherSettingsActivity extends Activity {
                 ? Config.MODE_NORMAL : Config.MODE_MAX));
         bannerChoice = findViewById(R.id.bannerChoice);
         bannerChoice.setOnClickListener(v -> setBannerMode(nextBannerMode(bannerMode)));
+        idleClockChoice = findViewById(R.id.idleClockChoice);
+        idleClock = choices.getString(Config.IDLE_CLOCK_KEY, Config.IDLE_CLOCK_OURS);
+        idleClockChoice.setOnClickListener(v -> setIdleClock(Config.IDLE_CLOCK_GOOGLE.equals(idleClock)
+                ? Config.IDLE_CLOCK_OURS : Config.IDLE_CLOCK_GOOGLE));
         int[] ids = {R.id.columns4, R.id.columns5, R.id.columns6, R.id.columns7};
         for (int i = 0; i < ids.length; i++) {
             final int value = i + 4;
@@ -228,6 +234,27 @@ public final class LauncherSettingsActivity extends Activity {
         refresh();
     }
 
+    /**
+     * "ours" keeps the theme's home_idle_clock_minutes; "google" stops our own clock so the system
+     * screensaver the user picked (Google's backdrop) takes over on idle. Switching to "google" opens
+     * the system screensaver screen, where that choice and its timing live.
+     */
+    private void setIdleClock(String next) {
+        idleClock = next;
+        choices.edit().putString(Config.IDLE_CLOCK_KEY, next).apply();
+        changed();
+        refresh();
+        if (Config.IDLE_CLOCK_GOOGLE.equals(next)) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.idle_clock_label)
+                    .setMessage(R.string.idle_google_hint)
+                    .setPositiveButton(R.string.open_screensaver_settings,
+                            (dialog, which) -> open(new Intent(Settings.ACTION_DREAM_SETTINGS)))
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show();
+        }
+    }
+
     /** Reads the settings the preset just changed back into this screen. */
     private void reload() {
         Config current = Config.load(this);
@@ -360,6 +387,8 @@ public final class LauncherSettingsActivity extends Activity {
                 Config.BANNER_MODE_LEAN.equals(bannerMode) ? R.string.banner_lean
                         : Config.BANNER_MODE_ICONS.equals(bannerMode) ? R.string.banner_icons
                         : R.string.banner_full)));
+        idleClockChoice.setText(getString(R.string.idle_clock_state, getString(
+                Config.IDLE_CLOCK_GOOGLE.equals(idleClock) ? R.string.idle_google : R.string.idle_ours)));
         for (int i = 0; i < columnChoices.length; i++) {
             columnChoices[i].setSelected(columns == i + 4);
         }
