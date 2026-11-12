@@ -56,6 +56,7 @@ environment (`TV_HOST`, `SERIAL`) and no address is stored in a result.
 | Upstream v3.0 lean | 532.2 KB | — | ~850 ms | 0.00% | 6/9/9 ms | 37.5–39.8 MB | 0 frames | 17,612 KB | `FINDINGS.md` §12, `AUDIT.md` §5 |
 | Fork `ar.TCL.cleanLauncher`, versionCode 9 | 373,881 B | `4aae86c2453a5a3b297c5ef2ab4542de2db78b0dbf34715068d59d17f40fcbc5` | not measured | — | — | — | — | — | `docs/project/LOG.md` (2026-10-26), `NEXT-SESSION.md` |
 | Fork banner-lean A/B (debuggable measurement build) | — | — | — | — | — | 43,217 / 44,163 KB | — | 18,396 → 10,340 KB | `docs/project/AUDIT.md` §5, `LOG.md` (2026-11-11) |
+| Fork post-single-pass (PR #446 adaptado) | 364,463 B | `605fc14fd2c2d1e0696493943929ddd40f7544e8999e9ff585500ccdfd551b63` | Normal 745 / Máx 1,076 ms | 0.00% | Normal 6/8/9, Máx 6/8/9 ms | Normal 35.0 MB, Máx 27.2 MB | Normal 3, Máx 3 frames | Normal 16,628 KB, Máx 9,828 KB | `baseline/grid-opt/`, `LOG.md` (2026-11-11, single-pass) |
 
 The 373,881 B APK is inside the size gate; it was never installed on the unit, so it has no runtime
 row yet. The banner A/B numbers are from a `debuggable=true` build and are not release numbers. A
@@ -101,3 +102,41 @@ de apps ni este panel). El fork entrega el paquete completo (Modo/Banners desde 
 banners podados −8 MB Native, mic verificado, boot-Home resuelto) a un costo de PSS que en Máx
 queda bajo el presupuesto. El upstream sin podar es el más pesado en Native y arranca más lento
 que Eddy y que el fork en Normal.
+
+## Grid single-pass, PR #446 adaptado (2026-11-11, build `605fc14f`)
+
+El `onMeasure` de `GridLayoutManager` fija el padding superior del grid **antes** del primer layout
+(`MainActivity.updateGridPadding`), en vez de hacerlo desde `OnLayoutChangeListener` y forzar un
+segundo pase; además se adoptaron los gradientes de 128×72 (`scrimDrawable`, `setAmbient`), el
+outline por adaptador y `getViewLayoutPosition` en `DockDecoration`. Detalle en `LOG.md`
+(2026-11-11, single-pass).
+
+Protocolo: mismo día, misma unidad, `cmd package compile -m speed` **re-ejecutado después de
+instalar** (el build de la línea base de la tabla triple NO lo tenía: de ahí la fila `Code` de
+abajo). El cold start se mide con la línea `Displayed` de `ActivityTaskManager`, pero con
+relanzamiento por tecla HOME: en esta unidad `am force-stop` devuelve el Home al launcher del
+vendor (Eddy) en vez de relanzar el fork, y `tools/bench-launcher.sh` en ese caso cae al
+`WaitTime`, que no mide nada. Runners: `baseline/grid-opt/coldstart.sh`, `views-peak.sh`,
+`measure.sh`; crudo en `baseline/grid-opt/`.
+
+| Métrica | Normal antes | Normal después | Máx antes | Máx después |
+|---|---:|---:|---:|---:|
+| Cold start, 5 corridas (`Displayed`) | 915/915/872/872/875 ms | 1202\*/755/744/742/745 ms | 1240/1240/1234/1259/1223 ms | 1129/1076/1066/1049/1080 ms |
+| Vistas infladas al arrancar (`dumpsys meminfo Views`, tras `Displayed`) | 116 | **92** | 116 | **92** |
+| Vistas en reposo (tras 40 teclas) | 140 | 140 | 116 | 116 |
+| Jank, 20 pares D-pad | 0,00% (1.660 f) | 0,00% (1.654 f) y 0,12% (1.656 f) | 0,00% (43 f) | 0,00% (43 f) |
+| p50/p90/p95 | 8/10/11 ms | 6/8/9 y 6/8/8 ms | 7/8/10 ms | 6/8/9 ms |
+| PSS + SwapPSS | 32.477 + 31 KB | 35.000 + 20 KB\*\* | 28.063 + 77 KB | **27.223 + 16 KB** |
+| Native Heap | 17.308 KB | 16.628 KB | 10.336 KB | 9.828 KB |
+| Idle 30 s | 1 frame | 3 frames | 3 frames | 3 frames |
+
+\* primera corrida después del reboot (caché en frío); las corridas 2-5 son las comparables.
+\*\* el total sube por la fila `Code` (3.552 → 6.956 KB: el APK se reinstaló, se recompiló con
+`compile -m speed` y se midió sobre un proceso recién booteado). Descontando `Code`, el proceso
+queda en 28.044 KB contra 28.925 KB de antes, y las filas de heap bajan (Java+Native+Other
+22.184 KB contra 22.904 KB). PSS no es comparable entre un proceso recién booteado y uno que
+lleva horas; el par limpio es Máx (27,2 contra 28,1 MB).
+
+Lo visible no cambia: `baseline/grid-opt/compare-normal.png` y `compare-max.png` son capturas
+antes/después lado a lado, y el diff por píxel fuera del reloj da máximo 1 nivel (Normal, el
+gradiente de 128×72) y 0 niveles (Máx).

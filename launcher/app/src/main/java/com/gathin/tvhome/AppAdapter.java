@@ -227,6 +227,11 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final int bannerMaxDensity;
     /** Packages drawn from their icon and name even when they have a banner (config.xml icon_tiles). */
     private final Set<String> iconTiles;
+    /**
+     * One outline provider for every tile: the shape only reads the view's width, so building an anonymous
+     * provider per holder (upstream #446) was an allocation per tile for the same result.
+     */
+    private final ViewOutlineProvider cardOutline;
     private final List<Entry> items = new ArrayList<>();
 
     AppAdapter(Context ctx, TileListener listener, int dockSize, Config cfg) {
@@ -257,6 +262,14 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.uniformTiles = cfg.uniformTiles;
         this.banner565 = cfg.banner565;
         this.bannerMaxDensity = cfg.bannerMaxDensity;
+        final float density = ctx.getResources().getDisplayMetrics().density;
+        this.cardOutline = new ViewOutlineProvider() {
+            @Override
+            public void getOutline(View view, Outline outline) {
+                // 16dp at the design width, scaled down with the tile so small tiles keep the same shape.
+                outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), cornerRadius(view.getWidth(), density));
+            }
+        };
         // Tiles keep their identity across reload(), so a focused tile stays on its app instead of
         // its view being rebound to whatever app now sits in that slot.
         setHasStableIds(true);
@@ -491,7 +504,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             View label = v.findViewById(R.id.label);
             label.setPadding(label.getPaddingLeft(), label.getPaddingTop(), label.getPaddingRight(), Math.round(4f * density));
         }
-        return new Holder(v, listener, animations, advancedEffects, reducedMotion, restNameAlpha, focusOvershoot);
+        return new Holder(v, cardOutline, listener, animations, advancedEffects, reducedMotion, restNameAlpha, focusOvershoot);
     }
 
     @Override
@@ -929,7 +942,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final float restNameAlpha;
         final boolean overshoot;
 
-        Holder(View v, TileListener listener, boolean animations, boolean advancedEffects,
+        Holder(View v, ViewOutlineProvider cardOutline, TileListener listener, boolean animations, boolean advancedEffects,
                boolean reducedMotion, float restNameAlpha, boolean overshoot) {
             super(v);
             card = v.findViewById(R.id.card);
@@ -944,15 +957,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             this.restNameAlpha = restNameAlpha;
             this.overshoot = overshoot;
 
-            final float density = v.getResources().getDisplayMetrics().density;
-            card.setOutlineProvider(new ViewOutlineProvider() {
-                @Override
-                public void getOutline(View view, Outline outline) {
-                    // 16dp at the design width, scaled down with the tile so small tiles keep the same shape.
-                    outline.setRoundRect(0, 0, view.getWidth(), view.getHeight(), cornerRadius(view.getWidth(), density));
-                }
-            });
+            card.setOutlineProvider(cardOutline);
             card.setClipToOutline(true);
+
+            final float density = v.getResources().getDisplayMetrics().density;
 
             card.setOnKeyListener((view, keyCode, event) -> {
                 if (event.getAction() != KeyEvent.ACTION_DOWN) return false;

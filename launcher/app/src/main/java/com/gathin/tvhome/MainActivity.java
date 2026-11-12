@@ -1,6 +1,5 @@
 package com.gathin.tvhome;
 
-import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.Dialog;
@@ -532,6 +531,23 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
 
             /**
+             * The dock sits on the grid's top padding, which only the layout below can compute. Setting that
+             * padding after the first layout made RecyclerView do the work twice: the XML 10dp pass inflated
+             * the rows at the top of the screen, the padding change pushed them off and laid the grid out
+             * again (upstream #446: 125 inflated views instead of 61 on the first frame). Measuring with the
+             * final padding already in place lays the grid out once.
+             */
+            @Override
+            public void onMeasure(@NonNull RecyclerView.Recycler recycler, @NonNull RecyclerView.State state,
+                                  int widthSpec, int heightSpec) {
+                int w = View.MeasureSpec.getSize(widthSpec), h = View.MeasureSpec.getSize(heightSpec);
+                if (w > 0 && h > 0) {
+                    updateGridPadding(w, h, cfg.rowsBelowDock, cfg.dockTitle, cfg.alwaysShowNames, appLibraryEnabled);
+                }
+                super.onMeasure(recycler, state, widthSpec, heightSpec);
+            }
+
+            /**
              * Every "bring this tile on screen" scroll lands here, both RecyclerView's own on focus and
              * onTileFocused's. The stock version treats the grid's top padding as the visible top, but that
              * padding only pushes the dock down the screen: grid rows scroll up into it. With the stock rule,
@@ -610,34 +626,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
 
         // tvOS layout: push the dock row towards the bottom of the screen, leaving room for
         // rows_below_dock grid rows under it; the rest of the grid stays below until you press Down.
-        int rowsBelowDock = cfg.rowsBelowDock;
+        // The padding is already set by GridLayoutManager.onMeasure before the first layout, so this only
+        // catches a later resize (a column change, the library opening): a no-op returns false.
         grid.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
-            int h = b - t;
-            // Item height follows the tile size, which follows the columns and the rows that must fit (AppAdapter.tileWidthPx).
-            int inner = (r - l) - grid.getPaddingLeft() - grid.getPaddingRight();
-            int tileW = AppAdapter.tileWidthPx(inner, h, COLUMNS, rowsBelowDock, cfg.dockTitle, cfg.dockRow, density);
-            int itemH = AppAdapter.itemHeightPx(AppAdapter.tileHeightPx(tileW), density);
-            int dockRow = itemH + (int) (AppAdapter.DOCK_EXTRA_DP * density);   // item height plus DockDecoration offsets
-            int gridRows = itemH * rowsBelowDock;
-            // Keep the hero below the header when the library is enabled on a short screen,
-            // even when the theme requests an extra visible row below the dock.
-            int shelfClearance = cfg.appLibrary ? hero.getMeasuredHeight() + (int) (40 * density) : 0;
-            int want = Math.max(shelfClearance, h - dockRow - gridRows - (int) (AppAdapter.BOTTOM_ROOM_DP * density));
-            // Where the rows cannot fit even at the smallest tile (3 rows with the title on), the title keeps its
-            // room above the dock and the last rows run off the bottom instead of the title drawing over the clock.
-            if (MainActivity.this.dockRow && cfg.dockTitle && rowsBelowDock > 0) want = Math.max(want, (int) (AppAdapter.TITLE_ROOM_DP * density));
-            // No dock to push down: the grid starts at the top, with room for the first row's zoom and glass.
-            if (!MainActivity.this.dockRow) want = (int) (AppAdapter.TOP_ROOM_DP * density);
-            // A single row never shows the names under its tiles (the title above the row names the app), so the
-            // 7dp gap and 22dp label item_app.xml keeps for them would only lift the row: sit it that much lower.
-            if (singleRow && !cfg.alwaysShowNames) want += (int) (29 * density);
-            if (grid.getPaddingTop() != want) {
-                grid.setPadding(grid.getPaddingLeft(), want, grid.getPaddingRight(), grid.getPaddingBottom());
+            if (updateGridPadding(r - l, b - t, cfg.rowsBelowDock, cfg.dockTitle, cfg.alwaysShowNames, appLibraryEnabled)
+                    && singleRow) {
                 // A vertical grid parks the dock on the new padding line by scrolling (onTileFocused); a sideways
                 // row cannot scroll vertically, and the layout request made from inside this layout pass is
                 // dropped, so lay the row out again on the next frame. The glass and the title were placed for the
                 // old position, so fit them again once it has moved.
-                if (singleRow) grid.post(() -> {
+                grid.post(() -> {
                     grid.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                         @Override
                         public void onGlobalLayout() {
@@ -900,6 +898,36 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 });
             }
         });
+        return true;
+    }
+
+    /**
+     * The grid's top padding: the dock sits on it and rows_below_dock leaves the rest of the screen under it.
+     * Called from GridLayoutManager.onMeasure before the first layout (one pass instead of two) and again on
+     * every later size change. Returns true when the padding moved, so the caller can re-seat the row.
+     */
+    private boolean updateGridPadding(int w, int h, int rowsBelowDock, boolean dockTitle,
+                                      boolean alwaysShowNames, boolean appLibrary) {
+        // Item height follows the tile size, which follows the columns and the rows that must fit (AppAdapter.tileWidthPx).
+        int inner = w - grid.getPaddingLeft() - grid.getPaddingRight();
+        int tileW = AppAdapter.tileWidthPx(inner, h, COLUMNS, rowsBelowDock, dockTitle, dockRow, density);
+        int itemH = AppAdapter.itemHeightPx(AppAdapter.tileHeightPx(tileW), density);
+        int dockRowH = itemH + (int) (AppAdapter.DOCK_EXTRA_DP * density);   // item height plus DockDecoration offsets
+        int gridRows = itemH * rowsBelowDock;
+        // Keep the hero below the header when the library is enabled on a short screen,
+        // even when the theme requests an extra visible row below the dock.
+        int shelfClearance = appLibrary ? hero.getMeasuredHeight() + (int) (40 * density) : 0;
+        int want = Math.max(shelfClearance, h - dockRowH - gridRows - (int) (AppAdapter.BOTTOM_ROOM_DP * density));
+        // Where the rows cannot fit even at the smallest tile (3 rows with the title on), the title keeps its
+        // room above the dock and the last rows run off the bottom instead of the title drawing over the clock.
+        if (dockRow && dockTitle && rowsBelowDock > 0) want = Math.max(want, (int) (AppAdapter.TITLE_ROOM_DP * density));
+        // No dock to push down: the grid starts at the top, with room for the first row's zoom and glass.
+        if (!dockRow) want = (int) (AppAdapter.TOP_ROOM_DP * density);
+        // A single row never shows the names under its tiles (the title above the row names the app), so the
+        // 7dp gap and 22dp label item_app.xml keeps for them would only lift the row: sit it that much lower.
+        if (singleRow && !alwaysShowNames) want += (int) (29 * density);
+        if (grid.getPaddingTop() == want) return false;
+        grid.setPadding(grid.getPaddingLeft(), want, grid.getPaddingRight(), grid.getPaddingBottom());
         return true;
     }
 
@@ -1832,7 +1860,9 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
      * the grid stay readable over the artwork. One small bitmap stretched over the screen, like the glow.
      */
     private Drawable scrimDrawable() {
-        int w = 480, h = 270;
+        // 128x72 fits a TV GPU's L2 texture cache, where 480x270 did not (upstream #446: 518 KB -> 36 KB).
+        // Gravity.FILL stretches it back over the screen with the bilinear filter set below.
+        int w = 128, h = 72;
         Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bmp);
         boolean rtl = getResources().getBoolean(R.bool.rtl_menu_bar);
@@ -1845,6 +1875,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 Shader.TileMode.CLAMP));
         canvas.drawRect(0, 0, w, h, paint);
         BitmapDrawable scrim = new BitmapDrawable(getResources(), bmp);
+        scrim.setFilterBitmap(true);
         scrim.setGravity(Gravity.FILL);
         return scrim;
     }
@@ -1939,8 +1970,8 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         ambientColor = color;
         BitmapDrawable glow = (BitmapDrawable) ambient.getBackground();
         if (glow == null) {
-            int w = 480;
-            int h = 270;
+            int w = 128;
+            int h = 72;
             Bitmap bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bmp);
             Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -1975,6 +2006,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             }
             canvas.drawRect(0, 0, w, h, paint);
             glow = new BitmapDrawable(getResources(), bmp);
+            glow.setFilterBitmap(true);
             glow.setGravity(Gravity.FILL);
             ambient.setBackground(glow);
         }
@@ -1991,7 +2023,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             return;
         }
         ambient.animate().alpha(1f).setDuration(180).start();
-        ambientAnimator = ValueAnimator.ofObject(new ArgbEvaluator(), ambientColor, color);
+        ambientAnimator = ValueAnimator.ofArgb(ambientColor, color);
         ambientAnimator.setDuration(360);
         ambientAnimator.addUpdateListener(animation -> setAmbient((int) animation.getAnimatedValue()));
         ambientAnimator.start();

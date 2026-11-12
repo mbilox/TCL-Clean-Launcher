@@ -78,7 +78,9 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent,
                                @NonNull RecyclerView.State state) {
-        int pos = parent.getChildAdapterPosition(view);
+        // getViewLayoutPosition, not getChildAdapterPosition: during the layout pass the adapter position is not
+        // resolved yet, and the lookup costs a pass over the children (upstream #446).
+        int pos = ((RecyclerView.LayoutParams) view.getLayoutParams()).getViewLayoutPosition();
         if (pos >= 0 && (singleRow || pos < dockSize)) {
             outRect.top = (int) (6 * density);
             outRect.bottom = (int) (12 * density);
@@ -90,9 +92,9 @@ public class DockDecoration extends RecyclerView.ItemDecoration {
         if (!bandVisible) return;
         boolean any = false;
         int cardWidth = 0;
-        for (int i = 0; i < parent.getChildCount(); i++) {
+        for (int i = 0, n = parent.getChildCount(); i < n; i++) {
             View child = parent.getChildAt(i);
-            int pos = parent.getChildAdapterPosition(child);
+            int pos = ((RecyclerView.LayoutParams) child.getLayoutParams()).getViewLayoutPosition();
             if (pos < 0 || (!bandAll && pos >= dockSize)) continue;
             RecyclerView.ViewHolder vh = parent.getChildViewHolder(child);
             View card = vh instanceof AppAdapter.Holder ? ((AppAdapter.Holder) vh).card : child.findViewById(R.id.card);
