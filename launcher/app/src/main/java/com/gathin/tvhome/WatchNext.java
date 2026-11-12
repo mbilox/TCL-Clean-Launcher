@@ -7,6 +7,7 @@ import android.net.Uri;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * The Continue watching row's content cards: what the TV's own provider says the owner was watching.
@@ -25,7 +26,8 @@ final class WatchNext {
     // Spelled out as a string, not a Uri: the class must load in a plain JVM test (WatchNextTest) too.
     private static final String WATCH_NEXT = "content://android.media.tv/watch_next_program";
     private static final String[] COLUMNS = {
-            "title", "episode_title", "poster_art_uri", "intent_uri", "last_engagement_time_utc_millis"};
+            "title", "episode_title", "poster_art_uri", "intent_uri", "last_engagement_time_utc_millis",
+            "package_name"};
 
     private WatchNext() {
     }
@@ -37,12 +39,16 @@ final class WatchNext {
         final String posterUri;
         final String intentUri;
         final long lastEngagement;
+        /** The app that published the row: the card binds its deep link to it, never to a resolver. */
+        final String packageName;
 
-        Item(String title, String episodeTitle, String posterUri, String intentUri, long lastEngagement) {
+        Item(String title, String episodeTitle, String posterUri, String intentUri,
+             String packageName, long lastEngagement) {
             this.title = title;
             this.episodeTitle = episodeTitle;
             this.posterUri = posterUri;
             this.intentUri = intentUri;
+            this.packageName = packageName;
             this.lastEngagement = lastEngagement;
         }
     }
@@ -64,7 +70,7 @@ final class WatchNext {
                 if (intentUri == null || intentUri.isEmpty()) continue;
                 String title = cursor.getString(0);
                 found.add(new Item(title == null ? "" : title, cursor.getString(1), cursor.getString(2),
-                        intentUri, cursor.getLong(4)));
+                        intentUri, cursor.getString(5), cursor.getLong(4)));
             }
             return recent(found, now);
         } catch (Exception ignored) {
@@ -79,6 +85,24 @@ final class WatchNext {
                 }
             }
         }
+    }
+
+    /**
+     * Pure rule for what a content card opens: the resolver and a random browser are never the answer.
+     * A deep link that names its own package opens as published; a package-less link is bound to the
+     * row's publisher through {@code bound} (the caller checks that app can take the link); when it
+     * cannot, the app's own launcher through {@code launcher}; with neither, the card is dropped (null):
+     * an unusable link must not fall into whichever browser a resolver picks.
+     *
+     * @param <L> the launch type (an Intent in production; anything in the plain JVM test)
+     */
+    static <L> L openable(L link, String linkPackage, String publisher,
+            Function<String, L> bound, Function<String, L> launcher) {
+        if (link == null) return null;
+        if (publisher == null || publisher.isEmpty()) return link;
+        if (linkPackage != null && !linkPackage.isEmpty()) return link;
+        L result = bound.apply(publisher);
+        return result != null ? result : launcher.apply(publisher);
     }
 
     /**

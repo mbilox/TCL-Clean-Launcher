@@ -13,11 +13,13 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Outline;
+import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
@@ -95,6 +97,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         final String posterUri;
         /** Text under the tile when it is focused in the grid: the label, plus the caption for a card. */
         final String name;
+        /** The app chip worn on a content card's poster (its icon over a dark plate); null on plain tiles. */
+        Drawable badge;
         /** Ambient glow colour; 0 until sampled from the banner, or the card's accent from the start. */
         int ambient;
         /** uniform_tiles card fill, top and bottom colour; null until sampled from the icon. */
@@ -595,6 +599,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      */
     private List<Entry> contentEntries() {
         List<Entry> entries = new ArrayList<>();
+        PackageManager pm = ctx.getPackageManager();
         // Only the row's worth: surplus published rows must not sink into the alphabetical grid.
         for (WatchNext.Item item : WatchNext.load(ctx, System.currentTimeMillis())) {
             if (entries.size() == dockSize) break;
@@ -602,14 +607,41 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             if (item.title == null || item.title.isEmpty()) continue;
             Intent deepLink = deepLink(item.intentUri);
             if (deepLink == null) continue;
+            // The resolver and a random browser are never the answer: the card binds the row's publisher
+            // (falls back to that app's launcher, drops the card when neither opens; see WatchNext.openable).
+            Intent link = deepLink;
+            deepLink = WatchNext.openable(link,
+                    link.getPackage(), item.packageName,
+                    pkg -> {
+                        Intent bound = new Intent(link).setPackage(pkg);
+                        return pm.resolveActivity(bound, 0) == null ? null : bound;
+                    },
+                    pkg -> {
+                        Intent launch = pm.getLeanbackLaunchIntentForPackage(pkg);
+                        if (launch == null) launch = pm.getLaunchIntentForPackage(pkg);
+                        return launch == null ? null : launch.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    });
+            if (deepLink == null) continue;
             String pkg = targetPackage(deepLink);
             // Same separator as Entry.name (the caption line under a focused tile).
             String label = item.episodeTitle == null || item.episodeTitle.isEmpty()
                     ? item.title : item.title + " \u00B7 " + item.episodeTitle;
             // The deep link is the card's identity: several rows carry one app's package.
             ComponentName component = new ComponentName(pkg, item.intentUri);
-            entries.add(new Entry(Entry.APP, label, component, poster(item.posterUri), null, null, 0,
-                    deepLink, item.lastEngagement, item.posterUri));
+            // The card says whose content it is: the app's icon as the tile, a chip on its poster,
+            // and the app's name under the focus line.
+            Drawable appIcon = null;
+            try {
+                appIcon = pm.getApplicationIcon(pkg);
+            } catch (Exception ignored) {
+            }
+            Drawable chip = cardChip(appIcon);
+            Drawable art = poster(item.posterUri);
+            if (art != null && chip != null) art = badged(art, chip);
+            Entry entry = new Entry(Entry.APP, label, component, art, appIcon, appLabel(pkg), 0,
+                    deepLink, item.lastEngagement, item.posterUri);
+            entry.badge = chip;
+            entries.add(entry);
         }
         return entries;
     }
@@ -624,6 +656,52 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } catch (URISyntaxException | RuntimeException ignored) {
             return null;
         }
+    }
+
+    /** The app a content card names in its focus line: the installed app's label; null when unknown. */
+    private String appLabel(String pkg) {
+        if (pkg == null) return null;
+        try {
+            PackageManager pm = ctx.getPackageManager();
+            CharSequence label = pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0));
+            return label == null ? null : label.toString();
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    /** The chip a content card wears on its poster: the app's icon over a dark rounded plate; null without an icon. */
+    private Drawable cardChip(Drawable icon) {
+        if (icon == null) return null;
+        float density = ctx.getResources().getDisplayMetrics().density;
+        int size = Math.round(28f * density);
+        try {
+            Bitmap chip = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(chip);
+            Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            paint.setColor(0xCC000000);
+            canvas.drawRoundRect(0, 0, size, size, 7f * density, 7f * density, paint);
+            int pad = Math.round(4f * density);
+            icon.setBounds(pad, pad, size - pad, size - pad);
+            icon.draw(canvas);
+            return new BitmapDrawable(ctx.getResources(), chip);
+        } catch (RuntimeException ignored) {
+            return null;
+        }
+    }
+
+    /** The poster wearing the app chip on its bottom-left corner: a content card says whose content it is. */
+    private Drawable badged(Drawable poster, Drawable chip) {
+        int w = poster.getIntrinsicWidth(), h = poster.getIntrinsicHeight();
+        int size = chip.getIntrinsicWidth();
+        if (w <= 0 || h <= 0 || size <= 0) return poster;
+        LayerDrawable layered = new LayerDrawable(new Drawable[]{poster, chip});
+        int inset = Math.round(6f * ctx.getResources().getDisplayMetrics().density);
+        // LayerDrawable draws each layer over the poster's whole bounds minus the insets: carve the
+        // chip's own square out, at the bottom-left corner, instead of stretching it to the poster.
+        layered.setLayerInset(1, inset, Math.max(0, h - size - inset),
+                Math.max(0, w - size - inset), inset);
+        return layered;
     }
 
     /** The app a content card belongs to: the deep link's package, else the app that handles it, else none. */
@@ -697,7 +775,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             for (Entry e : missing) {
                 Drawable art = poster(e.posterUri);
                 if (art != null) {
-                    e.banner = art;
+                    e.banner = e.badge != null ? badged(art, e.badge) : art;
                     arrived = true;
                 }
             }

@@ -1,6 +1,8 @@
 package com.gathin.tvhome;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -14,7 +16,11 @@ public class WatchNextTest {
     private static final long DAY = 24L * 60 * 60 * 1000L;
 
     private static WatchNext.Item item(String title, long when) {
-        return new WatchNext.Item(title, null, null, "https://example.test/" + title, when);
+        return item(title, "publisher.test", when);
+    }
+
+    private static WatchNext.Item item(String title, String publisher, long when) {
+        return new WatchNext.Item(title, null, null, "https://example.test/" + title, publisher, when);
     }
 
     private static List<WatchNext.Item> items(WatchNext.Item... list) {
@@ -65,6 +71,57 @@ public class WatchNextTest {
         List<WatchNext.Item> out = WatchNext.recent(in, now);
         assertEquals(WatchNext.MAX_ITEMS, out.size());
         assertEquals(Arrays.asList("t11", "t10", "t9", "t8", "t7", "t6", "t5", "t4"), titles(out));
+    }
+
+    /** The card's launch never reaches a resolver or browser: the publisher's package decides, or the card is dropped. */
+
+    @Test
+    public void linkThatNamesItsOwnPackageWins() {
+        Object link = new Object();
+        Object out = WatchNext.openable(link, "own.app", "publisher.test",
+                pkg -> { throw new AssertionError("A self-named link must not be bound again"); },
+                pkg -> { throw new AssertionError("A self-named link must not fall back"); });
+        assertSame(link, out);
+    }
+
+    @Test
+    public void rowWithoutPublisherKeepsTheRawLink() {
+        Object link = new Object();
+        Object out = WatchNext.openable(link, null, "",
+                pkg -> { throw new AssertionError("Nothing to bind without a publisher"); },
+                pkg -> { throw new AssertionError("Nothing to fall back without a publisher"); });
+        assertSame(link, out);
+    }
+
+    @Test
+    public void packagelessLinkTakesThePublisher() {
+        Object link = new Object(), bound = new Object();
+        Object out = WatchNext.openable(link, null, "publisher.test",
+                pkg -> { assertEquals("publisher.test", pkg); return bound; },
+                pkg -> { throw new AssertionError("The app launcher must not run when the link binds"); });
+        assertSame(bound, out);
+    }
+
+    @Test
+    public void linkThePublisherCannotHandleFallsBackToItsLauncher() {
+        Object link = new Object(), appLaunch = new Object();
+        Object out = WatchNext.openable(link, null, "publisher.test",
+                pkg -> null,
+                pkg -> { assertEquals("publisher.test", pkg); return appLaunch; });
+        assertSame(appLaunch, out);
+    }
+
+    @Test
+    public void applessRowDropsTheCard() {
+        assertNull(WatchNext.openable(new Object(), null, "publisher.test",
+                pkg -> null, pkg -> null));
+    }
+
+    @Test
+    public void nullLinkStaysNull() {
+        assertNull(WatchNext.openable(null, null, "publisher.test",
+                pkg -> { throw new AssertionError("Nothing to bind"); },
+                pkg -> { throw new AssertionError("Nothing to fall back"); }));
     }
 
     /** Equal stamps keep the provider's order (List.sort is stable), so the row does not jitter between reloads. */
