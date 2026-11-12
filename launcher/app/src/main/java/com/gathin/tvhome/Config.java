@@ -644,13 +644,18 @@ final class Config {
         if (chosenRows >= 0 && chosenRows <= 3) rowsBelow = chosenRows;
         animations = choices.getBoolean("animations", animations);
         advancedEffects = choices.getBoolean("advanced_effects", advancedEffects);
-        // The fork's Banners row wins over a theme or config.xml unless it is left on "full".
+        // The fork's Banners row is an absolute user choice that always wins over a theme, a preset
+        // or config.xml: "full" is full-quality ARGB at the #131 density (the preset's own banner
+        // keys are inert), "lean" is RGB_565 at 240, "icons" draws icon cards instead of banners.
         String bannerMode = choices.getString(BANNER_MODE_KEY, BANNER_MODE_FULL);
         if (BANNER_MODE_LEAN.equals(bannerMode)) {
             banner565 = true;
             bannerMaxDensity = 240;
         } else if (BANNER_MODE_ICONS.equals(bannerMode)) {
             uniformTiles = true;
+        } else if (BANNER_MODE_FULL.equals(bannerMode)) {
+            banner565 = false;
+            bannerMaxDensity = 0;
         }
         File wallpaper = dir != null ? new File(dir, WALLPAPER_NAME) : null;
         if (wallpaper != null && !(wallpaper.isFile() && wallpaper.length() > 0)) wallpaper = null;

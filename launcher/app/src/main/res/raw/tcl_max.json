@@ -12,7 +12,5 @@
   "clock_glow": false,
   "wallpaper": false,
   "sky_intensity": 0,
-  "always_show_names": true,
-  "banner_565": true,
-  "banner_density": 240
+  "always_show_names": true
 }

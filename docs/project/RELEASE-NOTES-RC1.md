@@ -22,8 +22,8 @@ are [`docs/BUDGET.md`](../BUDGET.md) and [`docs/project/FINDINGS.md`](FINDINGS.m
   (`SharedPreferences` `launcher_settings`, key `mode`).
 - **Banners row, independent of the mode**: **Full** / **Memory saver** / **Icons only**
   (`banner_mode` = `full` / `lean` / `icons`). `lean` forces `banner_565=true` +
-  `banner_density=240`; `icons` sets `uniform_tiles=true`. When it is not `full` it wins over the
-  preset, and a mode change does not reset it.
+  `banner_density=240`; `icons` sets `uniform_tiles=true`. It is an absolute choice that always wins over the preset and `config.xml`, and a mode
+  change does not reset it (the Máx preset no longer carries banner keys).
 - **`banner_565` and `banner_density` in `config.xml`**, both off by default so upstream behaviour is
   unchanged; with both off, `AppAdapter.decodeBanner()` takes the untouched upstream path. Measured
   Native Heap **18,396 KB → 10,340 KB (−8,056 KB, −44%)**, banner rubric ~7,734 KB → ~3,367 KB, total
