@@ -52,6 +52,8 @@ public final class LauncherSettingsActivity extends Activity {
     private String bannerMode;
     private TextView idleClockChoice;
     private String idleClock;
+    private TextView followRowChoice;
+    private boolean followRow;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -84,6 +86,15 @@ public final class LauncherSettingsActivity extends Activity {
         idleClock = choices.getString(Config.IDLE_CLOCK_KEY, Config.IDLE_CLOCK_OURS);
         idleClockChoice.setOnClickListener(v -> setIdleClock(Config.IDLE_CLOCK_GOOGLE.equals(idleClock)
                 ? Config.IDLE_CLOCK_OURS : Config.IDLE_CLOCK_GOOGLE));
+        followRowChoice = findViewById(R.id.followRowChoice);
+        followRow = !Config.FOLLOW_ROW_OFF.equals(choices.getString(Config.FOLLOW_ROW_KEY, Config.FOLLOW_ROW_ON));
+        followRowChoice.setOnClickListener(v -> {
+            followRow = !followRow;
+            choices.edit().putString(Config.FOLLOW_ROW_KEY,
+                    followRow ? Config.FOLLOW_ROW_ON : Config.FOLLOW_ROW_OFF).apply();
+            changed();
+            refresh();
+        });
         int[] ids = {R.id.columns4, R.id.columns5, R.id.columns6, R.id.columns7};
         for (int i = 0; i < ids.length; i++) {
             final int value = i + 4;
@@ -389,6 +400,8 @@ public final class LauncherSettingsActivity extends Activity {
                         : R.string.banner_full)));
         idleClockChoice.setText(getString(R.string.idle_clock_state, getString(
                 Config.IDLE_CLOCK_GOOGLE.equals(idleClock) ? R.string.idle_google : R.string.idle_ours)));
+        followRowChoice.setText(getString(R.string.follow_row_state,
+                getString(followRow ? R.string.on : R.string.off)));
         for (int i = 0; i < columnChoices.length; i++) {
             columnChoices[i].setSelected(columns == i + 4);
         }

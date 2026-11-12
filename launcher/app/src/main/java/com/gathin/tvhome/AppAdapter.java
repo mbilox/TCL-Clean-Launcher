@@ -179,6 +179,9 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final boolean dockTitle;
     /** The owner's saved order (reorder button, Order): key -> rank. Empty when there is none or it no longer applies. */
     private Map<String, Integer> savedRanks = Collections.emptyMap();
+    /** Current Continue watching row: its packages, newest first, and when each was opened (read per reload). */
+    private List<String> followRowPkgs = Collections.emptyList();
+    private Map<String, Long> openedByPkg = Collections.emptyMap();
     /** Dock size recorded with the saved order (Order.docked), or -1: then dock_apps says which tiles are docked. */
     private int savedDocked = -1;
     /** Reorder mode: no empty dock slots, so every position holds a tile that can move. */
@@ -225,6 +228,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final boolean banner565;
     /** Cap for the density a banner decodes at, 0 keeps the default (config.xml banner_density). */
     private final int bannerMaxDensity;
+    /** Continue watching: the first grid row shows the apps opened most recently from Home (config follow_row). */
+    private final boolean followRow;
     /** Packages drawn from their icon and name even when they have a banner (config.xml icon_tiles). */
     private final Set<String> iconTiles;
     /**
@@ -262,6 +267,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.uniformTiles = cfg.uniformTiles;
         this.banner565 = cfg.banner565;
         this.bannerMaxDensity = cfg.bannerMaxDensity;
+        this.followRow = cfg.followRow;
         final float density = ctx.getResources().getDisplayMetrics().density;
         this.cardOutline = new ViewOutlineProvider() {
             @Override
@@ -333,6 +339,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 fresh.add(new Entry(label, component, banner, icon));
             }
         }
+        refreshFollowRow(fresh);
         Collections.sort(fresh, (a, b) -> {
             // The owner's own order first; tiles it does not know (new installs) follow by the rule below.
             int saved = Order.compare(savedRanks, a.component.flattenToShortString(), b.component.flattenToShortString());
@@ -362,9 +369,66 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             fresh.add(docked + i, new Entry(Entry.EMPTY, "", new ComponentName(ctx, "empty-dock-slot-" + i),
                     null, null, null, 0));
         }
+        if (followRow) placeFollowRow(fresh, followRowStart(), openedByPkg, dockSize);
         items.clear();
         items.addAll(fresh);
         notifyDataSetChanged();
+    }
+
+    /** When each follow-row candidate (app tiles outside the dock and the owner's saved order) was opened. */
+    private Map<String, Long> readOpened(List<Entry> tiles) {
+        Map<String, Long> opened = new HashMap<>();
+        if (!followRow) return opened;
+        for (Entry e : tiles) {
+            if (e.kind != Entry.APP || favourites.contains(e.pkg)) continue;
+            if (savedRanks.containsKey(e.component.flattenToShortString())) continue;
+            long when = LastOpened.get(ctx, e.pkg);
+            if (when > 0) opened.put(e.pkg, when);
+        }
+        return opened;
+    }
+
+    /** Rebuilds the follow-row state for {@code tiles}; returns whether the row changed. */
+    private boolean refreshFollowRow(List<Entry> tiles) {
+        openedByPkg = readOpened(tiles);
+        List<String> next = RecentsRow.firstRow(openedByPkg, dockSize);
+        boolean changed = !next.equals(followRowPkgs);
+        followRowPkgs = next;
+        return changed;
+    }
+
+    /** The first row below the dock: the next row boundary after the dock block and its empty slots. */
+    private int followRowStart() {
+        return ((docked + emptySlots + dockSize - 1) / dockSize) * dockSize;
+    }
+
+    /** Moves the Continue watching tiles to the row at {@code start}, newest first, others shifting right. */
+    private static void placeFollowRow(List<Entry> tiles, int start, Map<String, Long> opened, int rowSize) {
+        if (start >= tiles.size() || opened.isEmpty()) return;
+        List<Entry> row = new ArrayList<>();
+        for (Entry e : tiles) {
+            if (row.size() == rowSize) break;
+            if (opened.containsKey(e.pkg)) row.add(e);
+        }
+        row.sort((x, y) -> Long.compare(opened.get(y.pkg), opened.get(x.pkg)));
+        int at = start;
+        for (Entry e : row) {
+            tiles.remove(e);
+            tiles.add(Math.min(at, tiles.size()), e);
+            at++;
+        }
+    }
+
+    /**
+     * Re-applies the follow row after a return to Home, so apps opened while Home was away lead the
+     * first grid row again. Nothing is re-decoded: the same drawables keep their entries. Returns
+     * whether anything moved.
+     */
+    boolean applyFollowRow() {
+        if (!followRow || items.isEmpty() || !refreshFollowRow(items)) return false;
+        placeFollowRow(items, followRowStart(), openedByPkg, dockSize);
+        notifyDataSetChanged();
+        return true;
     }
 
     /** icon_tiles: the app's icon centred on a dark banner-shaped tile, for apps whose own banner crops badly. */
@@ -597,7 +661,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         try {
             ctx.startActivity(i);
-            if (cinematic) LastOpened.record(ctx, e.pkg);
+            // The cinematic shelf and the Continue watching row both read it, on every open.
+            LastOpened.record(ctx, e.pkg);
             if (advancedEffects && !reducedMotion && ctx instanceof Activity) {
                 ((Activity) ctx).overridePendingTransition(R.anim.app_open_enter, R.anim.app_open_exit);
             }

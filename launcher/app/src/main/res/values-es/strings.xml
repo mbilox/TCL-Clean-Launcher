@@ -58,6 +58,7 @@
     <string name="idle_google">Google (fondo)</string>
     <string name="idle_google_hint">Nuestro reloj deja de correr. Elige el fondo de Google como protector de pantalla del sistema (Ajustes → Preferencias del dispositivo → Protector de pantalla) y cuándo arranca.</string>
     <string name="open_screensaver_settings">Abrir protector de pantalla</string>
+    <string name="follow_row_state">Seguir viendo: %1$s</string>
     <string name="native_settings">Ajustes del fabricante</string>
     <string name="columns_label">Aplicaciones por fila</string>
     <string name="dock_opacity_label">Opacidad de la barra del dock</string>

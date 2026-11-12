@@ -993,6 +993,13 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         restartIdleClock();
         promptsPaused = false;
         if (grid.getAdapter() == null) grid.setAdapter(adapter);   // dropped by onTrimMemory
+        // A return to Home: apps opened while away re-lead the grid (Continue watching row); the
+        // refocus in every switch case below follows the tile that had focus.
+        String followKey = lastFocusedKey;
+        if (adapter.applyFollowRow() && followKey != null) {
+            int position = adapter.positionOf(followKey);
+            if (position >= 0) grid.post(() -> focusTile(position));
+        }
         switch (tileRefresh.onResume(packagesChangedSinceRebuild())) {
             case REBUILD:
                 tilesReady = false;
