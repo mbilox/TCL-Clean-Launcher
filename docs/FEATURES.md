@@ -13,6 +13,9 @@ effects, wallpapers and skin. **Maximum optimization** turns off animations, eff
 layout, glow and wallpaper, always shows names, and forces banners to RGB 565 at 240 dpi. The
 choice survives a force-close and it does **not** reset the Banners choice below.
 
+![Mode: maximum optimization — no wallpaper, names always shown](screenshots/mode-max.png)
+![Mode: normal, restored from the same switch](screenshots/mode-normal.png)
+
 ### Banners — Full / Memory saver / Icons only
 An absolute choice that always wins over the preset and `config.xml`:
 
