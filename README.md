@@ -1,3 +1,10 @@
+> **TCL Clean Launcher** — a fork of CleanYourTV built for one TV: a TCL BeyondTV2 (RTD2851,
+> Android TV 11, AR05, 2 GB, 1080p). Everything this fork adds over upstream — every launcher
+> option, the sideways watch-next row, the measured memory wins (−44 % Native Heap on the banner
+> path) and the release APK — is documented in **[docs/FEATURES.md](docs/FEATURES.md)**, with
+> screenshots of every state and the RC1 release notes in
+> [docs/project/RELEASE-NOTES-RC1.md](docs/project/RELEASE-NOTES-RC1.md).
+
 <p align="center">
   <a href="https://cleanyour.tv"><img src="https://raw.githubusercontent.com/Gathin23/cleanyourtv/main/docs/banner.png" alt="CleanYourTV. Your TV, minus the ads. Strip the bloatware from any Android TV or Google TV over Wi-Fi and replace the ad-filled home screen with a clean launcher that looks like an Apple TV. No root, no cable, nothing uninstalled, and a one-line restore." width="800"></a>
 </p>
