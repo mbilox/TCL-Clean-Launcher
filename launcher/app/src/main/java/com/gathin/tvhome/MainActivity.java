@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.content.SharedPreferences;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -2340,7 +2341,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             if (index < COLUMNS) return false;             // dock row: let focus move to the top bar
             // The Continue watching row is the line between the dock and this tile: focus goes there, not past it.
             if (adapter.watchRowAbove(position)) {
-                focusWatchRow();
+                focusWatchRow(index % COLUMNS);
                 grid.playSoundEffect(SoundEffectConstants.NAVIGATION_UP);
                 return true;
             }
@@ -2348,7 +2349,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         } else {
             // The row hangs under the dock row: Down from there lands on its cards, sideways.
             if (adapter.watchRowBelow(position)) {
-                focusWatchRow();
+                focusWatchRow(index % COLUMNS);
                 grid.playSoundEffect(SoundEffectConstants.NAVIGATION_DOWN);
                 return true;
             }
@@ -2373,39 +2374,44 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         hideHero();
     }
 
-    /** Up from the row: back to the dock band, or the top bar when the row is the first line on screen. */
-    @Override public void onWatchRowUp() {
+    /** Up from the row: back to the dock band under the focused card's column, or the top bar when the row is
+     *  the first line on screen. A card past the dock's filled tiles lands on its last tile (WatchRow.dockTarget). */
+    @Override public void onWatchRowUp(int cardIndex) {
         int row = adapter.watchRowPosition();
         if (row <= 0) {
             firstTopButton().requestFocus();
         } else {
-            focusTile(adapter.tileIndexAt(row - 1));
+            int target = WatchRow.dockTarget(cardIndex, adapter.dockFilled());
+            if (target >= 0) focusTile(target);
         }
         grid.playSoundEffect(SoundEffectConstants.NAVIGATION_UP);
     }
 
-    /** Down from the row: the first grid row under it, or the App library when nothing follows. */
-    @Override public void onWatchRowDown() {
+    /** Down from the row: the grid row under it at the focused card's column, or the App library when nothing follows. */
+    @Override public void onWatchRowDown(int cardIndex) {
         int row = adapter.watchRowPosition();
         int below = row + 1;
         if (below < adapter.getItemCount()) {
             if (adapter.isLibraryAt(below)) focusLibrary();
-            else focusTile(adapter.tileIndexAt(below));
+            else focusTile(WatchRow.rowDownTarget(adapter.tileIndexAt(below), cardIndex, adapter.appCount()));
         }
         grid.playSoundEffect(SoundEffectConstants.NAVIGATION_DOWN);
     }
 
-    /** Puts focus on the sideways row's first card (it always opens on the newest one). */
-    private void focusWatchRow() {
+    /** Puts focus on the sideways row's card {@code preferredCard}, keeping the column of the move that got here. */
+    private void focusWatchRow(int preferredCard) {
         int row = adapter.watchRowPosition();
         if (row < 0) return;
         libraryFocusPending = false;
         cancelPendingFocusScroll();
-        if (adapter.focusRowFirstCard(grid.findViewHolderForAdapterPosition(row))) return;
-        // Not laid out yet: bring the row on screen, then focus its first card once it is there.
+        if (adapter.focusRowCard(grid.findViewHolderForAdapterPosition(row), preferredCard)) {
+            ensureRowFullyVisible();
+            return;
+        }
+        // Not laid out yet: bring the row on screen, then focus its card once it is there.
         if (!animations) {
             grid.scrollToPosition(row);
-            grid.post(() -> adapter.focusRowFirstCard(grid.findViewHolderForAdapterPosition(adapter.watchRowPosition())));
+            grid.post(() -> adapter.focusRowCard(grid.findViewHolderForAdapterPosition(adapter.watchRowPosition()), preferredCard));
             return;
         }
         pendingFocusScroll = new RecyclerView.OnScrollListener() {
@@ -2414,12 +2420,40 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
                 rv.removeOnScrollListener(this);
                 if (pendingFocusScroll != this) return;
                 pendingFocusScroll = null;
-                adapter.focusRowFirstCard(rv.findViewHolderForAdapterPosition(adapter.watchRowPosition()));
+                ensureRowFullyVisible();
+                adapter.focusRowCard(rv.findViewHolderForAdapterPosition(adapter.watchRowPosition()), preferredCard);
             }
         };
         grid.addOnScrollListener(pendingFocusScroll);
         grid.smoothScrollToPosition(row);
     }
+
+    /**
+     * Scrolls the row item fully into view: the smooth scroller stops as soon as any part of the row is on
+     * screen, and a row already peeking from the screen's bottom edge used to get no scroll at all — the
+     * cards showed but their caption (title plus the app's badge and name) stayed cut. Uses the row's
+     * arithmetic helper so the rule is testable.
+     */
+    private void ensureRowFullyVisible() {
+        RecyclerView.ViewHolder holder = grid.findViewHolderForAdapterPosition(adapter.watchRowPosition());
+        if (holder == null) { Log.d(TAG_ROW_SCROLL, "ensure: no holder"); return; }
+        int pad = adapter.focusOvershootPx(holder.itemView.getHeight());
+        // The grid's own bounds are not the visible span: the grid ends above the screen's bottom edge and
+        // its children render past it (clipChildren false up the chain), so the row is "fully visible" only
+        // when it clears the physical screen. Compare everything in the grid's coordinate space.
+        // The grid's own bounds ARE the visible span: it ends at the screen's bottom edge, and its children
+        // render into its paddings (clipToPadding false). Above its top edge sits the top bar, so a row cut
+        // there still counts as cut even though the screen shows more pixels behind it.
+        int dy = WatchRow.scrollDeficit(holder.itemView.getTop(), holder.itemView.getBottom(),
+                0, grid.getHeight(), pad);
+        Log.d(TAG_ROW_SCROLL, "ensure: dy=" + dy + " pad=" + pad + " top=" + holder.itemView.getTop()
+                + " bottom=" + holder.itemView.getBottom() + " vh=" + grid.getHeight());
+        if (dy == 0) return;
+        if (!animations || reducedMotion) grid.scrollBy(0, dy);
+        else grid.smoothScrollBy(0, dy);
+    }
+
+    private static final String TAG_ROW_SCROLL = "FocusRowScroll";
 
     @Override public void onLibraryFocused() {
         libraryFocusPending = false;

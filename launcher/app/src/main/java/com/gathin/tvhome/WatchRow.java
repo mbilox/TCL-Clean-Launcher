@@ -40,4 +40,36 @@ final class WatchRow {
         if (rowPosition < 0 || columns <= 0) return false;
         return tileIndex >= rowPosition - columns && tileIndex < rowPosition;
     }
+
+    /**
+     * The scroll to apply so the row item is fully on screen: {@code rowTop}/{@code rowBottom} are the row
+     * item's bounds, {@code viewportTop}/{@code viewportBottom} the grid's visible span, and {@code pad}
+     * extra room the row needs beyond its own bounds (the focused card zooms past them). Positive scrolls
+     * down, negative up, and zero when the row already fits. A row taller than the viewport scrolls none:
+     * no scroll can reveal it whole, and chasing one edge would oscillate against the other.
+     */
+    static int scrollDeficit(int rowTop, int rowBottom, int viewportTop, int viewportBottom, int pad) {
+        if (viewportBottom - viewportTop <= 0) return 0;
+        if (rowBottom - rowTop > viewportBottom - viewportTop) return 0;
+        if (rowBottom + pad > viewportBottom) return rowBottom + pad - viewportBottom;
+        if (rowTop < viewportTop) return rowTop - viewportTop;
+        return 0;
+    }
+
+    /**
+     * The dock tile a card hands focus to on Up: the card's own column when the dock fills that far, its
+     * last filled tile otherwise (the dock's empty slots take no focus). A dock with no apps has no target.
+     */
+    static int dockTarget(int cardIndex, int dockFilled) {
+        if (dockFilled <= 0) return -1;
+        return Math.min(cardIndex, dockFilled - 1);
+    }
+
+    /**
+     * The tile a card hands focus to on Down: the same column of the first row under the row item, clamped
+     * at the grid's last tile (a short last row has no tile that far right).
+     */
+    static int rowDownTarget(int firstTileBelow, int cardIndex, int tiles) {
+        return Math.max(0, Math.min(firstTileBelow + cardIndex, tiles - 1));
+    }
 }

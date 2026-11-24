@@ -86,10 +86,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         void onLibraryUp();
         /** Focus landed on a card of the Continue watching row: it is no grid tile, so nothing tracks it there. */
         void onWatchRowFocused();
-        /** Up from that row: back to the dock, or the top bar when the row is the first line on screen. */
-        void onWatchRowUp();
-        /** Down from that row: the first grid row under it, or the App library when nothing follows. */
-        void onWatchRowDown();
+        /** Up from that row (focused card {@code cardIndex}): back to the dock, or the top bar when the row is the first line on screen. */
+        void onWatchRowUp(int cardIndex);
+        /** Down from that row (focused card {@code cardIndex}): the first grid row under it, or the App library when nothing follows. */
+        void onWatchRowDown(int cardIndex);
     }
 
     static final class Entry {
@@ -334,11 +334,11 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         @Override public boolean onTileVerticalKey(int index, int keyCode) {
             if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                listener.onWatchRowUp();
+                listener.onWatchRowUp(index);
                 return true;
             }
             if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-                listener.onWatchRowDown();
+                listener.onWatchRowDown(index);
                 return true;
             }
             // Left/Right walk the cards, the row scrolling the focused one in; only its two ends are walled off.
@@ -350,8 +350,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         @Override public void onTileLongPress(int index, View card) { }
         @Override public void onLibraryUp() { }
         @Override public void onWatchRowFocused() { }
-        @Override public void onWatchRowUp() { }
-        @Override public void onWatchRowDown() { }
+        @Override public void onWatchRowUp(int cardIndex) { }
+        @Override public void onWatchRowDown(int cardIndex) { }
     };
 
     AppAdapter(Context ctx, TileListener listener, int dockSize, Config cfg) {
@@ -933,6 +933,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 }
             }
             if (arrived) mainHandler.post(() -> {
+                Log.i(WATCH_TAG, "posters arrived: notify rowAdapter=" + (rowAdapter != null));
                 notifyDataSetChanged();
                 // The sideways row's own adapter keys on the card list, and the list did not change:
                 // poster arrivals rebind it directly, or the row keeps its icon fallback forever.
@@ -979,7 +980,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             RecyclerView sideways = row.findViewById(R.id.watchRow);
             sideways.setLayoutManager(new LinearLayoutManager(ctx, RecyclerView.HORIZONTAL, false));
             sideways.setItemAnimator(null);
-            sideways.setAdapter(new RowAdapter());
+            sideways.setAdapter(rowAdapter = new RowAdapter());
             return new RecyclerView.ViewHolder(row) { };
         }
         return createTile(parent, false);
@@ -1041,7 +1042,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             label.setPadding(label.getPaddingLeft(), label.getPaddingTop(), label.getPaddingRight(), Math.round(4f * density));
         }
         return new Holder(v, cardOutline, row ? rowTiles : listener, animations, advancedEffects, reducedMotion,
-                restNameAlpha, focusOvershoot);
+                restNameAlpha, focusOvershoot, row);
     }
 
     @Override
@@ -1168,21 +1169,40 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     /**
-     * Puts focus on the sideways row's first, newest card, given the grid's holder for the row item; false when
-     * the row has not been laid out yet (the caller focuses it once it has).
+     * Puts focus on the sideways row's card {@code cardIndex}, given the grid's holder for the row item; false
+     * when the row has not been laid out yet (the caller focuses it once it has). A card beyond what is laid
+     * out falls back to the last laid-out card, so a deep column still lands on the row.
      */
-    boolean focusRowFirstCard(RecyclerView.ViewHolder rowHolder) {
+    boolean focusRowCard(RecyclerView.ViewHolder rowHolder, int cardIndex) {
         if (rowHolder == null) return false;
         RecyclerView sideways = rowHolder.itemView.findViewById(R.id.watchRow);
-        View card = sideways == null ? null : sideways.getChildAt(0);
+        if (sideways == null || sideways.getChildCount() == 0) return false;
+        RecyclerView.ViewHolder target = sideways.findViewHolderForAdapterPosition(cardIndex);
+        View card = target != null ? target.itemView
+                : sideways.getChildAt(Math.min(cardIndex, sideways.getChildCount() - 1));
         return card != null && card.requestFocus();
+    }
+
+    /**
+     * How far a focused card's zoom reaches past the row item's bounds, in px: the card scales around its
+     * center ({@link #bindTile} uses 1.10, 1.12 with advanced effects, none without animations), so its
+     * bottom half sticks out by half the growth. The row's scroll margin needs this on top of its bounds.
+     */
+    int focusOvershootPx(int itemHeightPx) {
+        if (!animations) return 0;
+        float scale = advancedEffects ? 1.12f : 1.10f;
+        return (int) Math.ceil(itemHeightPx * (scale - 1f) / 2f);
     }
 
     /** Puts the current content cards in the sideways row and keeps it on its first card. */
     private void bindWatchRow(View row) {
         RecyclerView sideways = row.findViewById(R.id.watchRow);
         RowAdapter adapter = (RowAdapter) sideways.getAdapter();
-        if (adapter == null) sideways.setAdapter(rowAdapter = adapter = new RowAdapter());
+        if (adapter == null) sideways.setAdapter(adapter = new RowAdapter());
+        // The live adapter is whichever instance this row's holders listen to: the poster-arrival notify
+        // reaches it only through this field, so every path that binds a row keeps it current (a recycled
+        // holder brings its own adapter the create path never saw).
+        rowAdapter = adapter;
         if (adapter.submit(contentCards)) sideways.scrollToPosition(0);
     }
 
@@ -1217,7 +1237,10 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         @Override
         public void onBindViewHolder(@NonNull Holder holder, int position) {
-            bindTile(holder, shown.get(position), -1, false);
+            Entry e = shown.get(position);
+            Log.i(WATCH_TAG, "row bind " + position + " banner=" + (e.banner != null)
+                    + " uri=" + (e.posterUri == null ? "null" : "set"));
+            bindTile(holder, e, -1, false);
         }
 
         @Override
@@ -1650,9 +1673,11 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         /** Alpha of the name while the tile is not focused (always_show_names). */
         final float restNameAlpha;
         final boolean overshoot;
+        /** A sideways row's card: its caption never fades, it only makes room for the zoomed poster. */
+        final boolean rowCaption;
 
         Holder(View v, ViewOutlineProvider cardOutline, TileListener listener, boolean animations, boolean advancedEffects,
-               boolean reducedMotion, float restNameAlpha, boolean overshoot) {
+               boolean reducedMotion, float restNameAlpha, boolean overshoot, boolean rowCaption) {
             super(v);
             card = v.findViewById(R.id.card);
             cardBackground = card.getBackground();
@@ -1666,6 +1691,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             this.reducedMotion = reducedMotion;
             this.restNameAlpha = restNameAlpha;
             this.overshoot = overshoot;
+            this.rowCaption = rowCaption;
 
             card.setOutlineProvider(cardOutline);
             card.setClipToOutline(true);
@@ -1693,7 +1719,7 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     view.setTranslationZ(0f);
                     banner.setScaleX(1f);
                     banner.setScaleY(1f);
-                    name.setAlpha(focused ? 1f : restNameAlpha);
+                    name.setAlpha(focused || rowCaption ? 1f : restNameAlpha);
                     name.setTranslationY(0f);
                 } else if (reducedMotion) {
                     // A short zoom with no hardware layer: building a layer for so short an animation costs more
@@ -1704,11 +1730,14 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             .setDuration(focused ? Motion.REDUCED_MS : 60)
                             .setInterpolator(new DecelerateInterpolator())
                             .start();
-                    name.setAlpha(focused ? 1f : restNameAlpha);
+                    name.setAlpha(focused || rowCaption ? 1f : restNameAlpha);
                     // Same place as the full motion's slide ends: the layout's -6dp is only its starting point, and
                     // left there the name overlaps the zoomed tile.
                     // Only on focus: snapping it back to -6dp while it fades out would jump it up over the tile.
+                    // A row's caption never fades: unfocused it rests at its natural position, focused it slides
+                    // down the same 4dp to clear the zoomed poster.
                     if (focused) name.setTranslationY(density * 4f);
+                    else if (rowCaption) name.setTranslationY(0f);
                 } else {
                     view.animate().scaleX(s).scaleY(s)
                             .translationY(focused && advancedEffects ? -4f * density : 0f)
@@ -1721,8 +1750,8 @@ public class AppAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         banner.animate().scaleX(focused ? 1.035f : 1f).scaleY(focused ? 1.035f : 1f)
                                 .setDuration(280).start();
                     }
-                    name.animate().alpha(focused ? 1f : restNameAlpha)
-                            .translationY(focused ? density * 4f : -density * 6f)
+                    name.animate().alpha(focused || rowCaption ? 1f : restNameAlpha)
+                            .translationY(focused ? density * 4f : rowCaption ? 0f : -density * 6f)
                             .setDuration(220).start();
                 }
                 int pos = getBindingAdapterPosition();
