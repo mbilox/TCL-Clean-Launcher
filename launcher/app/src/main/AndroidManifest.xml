@@ -195,10 +195,11 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <!-- One-shot diagnostic over adb (am start): dumps the TV provider's watch-next and preview
-             rows to logcat. Not reachable from the UI. exported while the diagnosis runs. -->
+             rows to logcat. Not reachable from the UI. Unexported for the release: adb can still
+             start it, no other app can. -->
         <activity
             android:name=".WatchNextProbeActivity"
-            android:exported="true"
+            android:exported="false"
             android:excludeFromRecents="true"
             android:noHistory="true"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
