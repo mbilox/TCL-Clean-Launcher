@@ -125,17 +125,34 @@ reboot: `TV_HOST=<tv ip> tools/check.py devices/telemetry-7.txt ar.TCL.cleanLaun
 
 | | |
 | --- | --- |
-| APK | 364,463 B |
-| SHA-256 | `605fc14fd2c2d1e0696493943929ddd40f7544e8999e9ff585500ccdfd551b63` |
+| APK | 376,259 B |
+| SHA-256 | `d4ff3885f29dba6847e9c10495c9be3b9397fdf5734ec279cb46402831b1f367` |
 
-`docs/project/PLAN.md` (status block) records the frozen candidate at 364,463 B with this SHA;
-`docs/BUDGET.md` records the installed build of the same SHA at 364,463 B. The SHA-256 is the
-identifier that matters and both files agree on it. Verify the APK, not the build: `aapt2 dump
-badging` for package and locales, `apksigner verify --print-certs` for the certificate.
+This is the candidate installed on the unit on 2026-11-24 19:39 (home verified after install). It
+carries the gate-day fixes: the watch row reveals fully in both directions with column-preserving
+navigation, the row's captions never fade, the sideways row's poster repaint no longer depends on
+holder recycling, and the dev-only probe is unexported. `docs/project/PLAN.md` (status block) and
+`docs/BUDGET.md` still record the previous frozen candidate (364,463 B / `605fc14f…`); both are
+refreshed when the release is recorded. Verify the APK, not the build: `aapt2 dump badging` for
+package and locales, `apksigner verify --print-certs` for the certificate.
+
+## Known behaviour that is not a launcher defect
+
+- **First mic press after a long idle can fail silently.** The voice chain is firmware
+  (`com.tcl.guard` → `com.tcl.assistant` → katniss); the launcher ships the `btnVoice` pill so the
+  chain works, but Android parks those processes on idle and the first press can reach katniss
+  before `com.tcl.assistant` is up again (measured: 12 s late on a 7-day-old boot under load 20) —
+  the intent then arrives without an audio stream and katniss rejects it. The second press works;
+  the owner confirmed normal tap-to-talk afterwards. A reboot clears it; keeping those processes
+  alive would cost ~200 MB of RAM on a 2 GB board.
+- The sleep path of this firmware shows a TCL "switching to standby" dialog instead of the dream
+  when `sleep_timeout` expires; the dream (Google's backdrop) starts on the power/sleep path
+  (`screensaver_activate_on_sleep=1`).
 
 ## Not yet published
 
-Publication is **gated on the owner's own tests**: cast with the owner's phone (upstream #453), the
-mic with the physical remote button on this exact build, and anything else the owner wants before it
-goes out. The decision to publish is the owner's, explicitly (PLAN §10 status, `docs/BUDGET.md`
-"Recording a release"). Until then this document is a draft and no release exists.
+Publication is **gated on the owner's own tests**: cast with the owner's phone (upstream #453) and
+anything else the owner wants before it goes out. Already verified by the owner on 2026-11-24: the
+physical remote's mic on this build chain (with the cold-start race documented above) and the
+launcher options over ADB. The decision to publish is the owner's, explicitly (PLAN §10 status,
+`docs/BUDGET.md` "Recording a release"). Until then this document is a draft and no release exists.
