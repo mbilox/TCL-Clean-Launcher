@@ -11,6 +11,9 @@ permissions:
 jobs:
   lists-and-tools:
     name: Lists, tools and docs
+    # Fork note: this job asserts upstream's own README/SHOWCASE content, which this fork repurposes
+    # (docs/FEATURES.md carries our front-page content instead). Upstream only.
+    if: github.repository == 'Gathin23/cleanyourtv'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
@@ -34,7 +37,8 @@ jobs:
     # A job of its own, so "the tables want regenerating" never reads as "the lists are broken": the merge
     # bot waits for main to be green between merges and regenerates the tables after the wave.
     name: README tables
-    if: github.event_name == 'push'
+    # Fork note: our README.md is hand-written (no tv-table markers); the generator is upstream-only.
+    if: github.event_name == 'push' && github.repository == 'Gathin23/cleanyourtv'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
