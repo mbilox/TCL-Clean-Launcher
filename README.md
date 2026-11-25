@@ -8,9 +8,11 @@
 
 # TCL Clean Launcher
 
-A Home launcher for **one TV**: a TCL BeyondTV2 (RTD2851, Android TV 11, AR05, 2 GB, 1080p), forked
-from [CleanYourTV](https://github.com/Gathin23/cleanyourtv) v3.0 (MIT) and built around what that
-board actually needs. **First release candidate: [`v3.0.0-rc1`](https://github.com/mbilox/TCL-Clean-Launcher/releases/tag/v3.0.0-rc1).**
+A Home launcher for **TCL Android TVs** — built on and verified for a TCL BeyondTV2 (RTD2851,
+Android TV 11, AR05, 2 GB, 1080p), forked from
+[CleanYourTV](https://github.com/Gathin23/cleanyourtv) v3.0 (MIT). The example configs for every
+TCL model upstream documents live under [`examples/`](examples). **First release candidate:
+[`v3.0.0-rc1`](https://github.com/mbilox/TCL-Clean-Launcher/releases/tag/v3.0.0-rc1).**
 
 Everything this fork adds over upstream — every launcher option with screenshots, the sideways
 watch-next row, and the measured memory wins — is documented in

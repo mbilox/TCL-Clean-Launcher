@@ -4,8 +4,7 @@ A Home launcher for one TV: a TCL BeyondTV2 (RTD2851, Android TV 11, AR05, 2 GB,
 [CleanYourTV](https://github.com/Gathin23/cleanyourtv) v3.0 (MIT). This is the first release candidate
 of the fork and it is **not published yet** — see the gate at the end.
 
-*Draft release body. Numbers and paths are the ones committed in this tree; the authoritative tables
-are [`docs/BUDGET.md`](../BUDGET.md) and [`docs/project/FINDINGS.md`](FINDINGS.md).*
+*Draft release body. Numbers and paths are the ones committed in this tree; the authoritative numbers were measured on the unit itself (heapprofd A/B runs).*
 
 ## What's new vs upstream v3.0
 
@@ -28,7 +27,7 @@ are [`docs/BUDGET.md`](../BUDGET.md) and [`docs/project/FINDINGS.md`](FINDINGS.m
   unchanged; with both off, `AppAdapter.decodeBanner()` takes the untouched upstream path. Measured
   Native Heap **18,396 KB → 10,340 KB (−8,056 KB, −44%)**, banner rubric ~7,734 KB → ~3,367 KB, total
   PSS flat (no PSS claim). Attribution by heapprofd, method and traps in `FINDINGS.md` §14, A/B in
-  `docs/project/AUDIT.md` §5.
+  (A/B measured on the unit).
 - **Launcher settings reachable with the remote:** `launcher_settings_button` defaults to **on** in
   the fork (upstream keeps it off), because the Modo/Banners rows live in launcher settings.
 - **The voice pill (`btnVoice`)** so the TCL microphone chain keeps working: the remote's mic button
@@ -47,7 +46,7 @@ are [`docs/BUDGET.md`](../BUDGET.md) and [`docs/project/FINDINGS.md`](FINDINGS.m
 Measured on the unit
 
 Same day, same protocol (`tools/bench-launcher.sh`), Home in the foreground
-(`docs/BUDGET.md`, "Comparativa triple del primer release"). Eddy 0.6.0 and upstream v3.0 were
+(the fork's internal release budget). Eddy 0.6.0 and upstream v3.0 were
 measured on the same TV as reference points.
 
 | Metric | Fork — Max | Fork — Normal | Eddy 0.6.0 | Upstream v3.0 |
@@ -66,7 +65,7 @@ measured on the same TV as reference points.
   release does not meet it either: Max is ~1.2 s and Normal 829–836 ms. Eddy's 458–489 ms comes from
   a smaller launcher (no app library, no settings panel). The grid single-pass work adapted from
   upstream PR #446 later measured Normal 745 ms / Max 1,076 ms on a separate build
-  (`docs/BUDGET.md`); it is not part of this candidate.
+  the internal release budget; it is not part of this candidate.
 - Native Heap is reported, not gated: `banner_565` + `banner_density:240` plus the lean keys take it
   to ~10.3 MB. PSS did not move with the banner prune, and no PSS claim is made from it.
 
@@ -93,7 +92,7 @@ stays broken until then (`FINDINGS.md` §6).
    4 = `KeyCustomFunctionService` (§17b). Confirm with
    `adb shell dumpsys activity activities | grep mResumedActivity`: the *activity namespace* in
    `resolve-activity` is `com.gathin.tvhome` for every build of this family, so it cannot be used to
-   tell them apart (`docs/project/PLAN.md` §10, lesson 12).
+   tell them apart.
 3. **Two full reboots.** Then Home comes up on
    `ar.TCL.cleanLauncher/com.gathin.tvhome.MainActivity` (2/2 reboots, §17d).
 
@@ -110,7 +109,7 @@ reboot: `TV_HOST=<tv ip> tools/check.py devices/telemetry-7.txt ar.TCL.cleanLaun
   (`devices/README.md`).
 - **Cast is untested on this unit** (upstream #453 is the record of Chromecast breakage after large
   debloats). `overseasappshow` was disabled for the boot-Home fix with that risk acknowledged, and the
-  cast test is still on the owner's list before publication (`docs/project/PLAN.md`, status block).
+  cast test is still on the owner's list before publication.
 - **Accessibility services are off by default** here (`enabled_accessibility_services` is `null`), so
   `HomeKeyService`/`InputKeyService` are not bound: `app_keys`, `settings_key_keycodes` and the other
   remote-key remaps are inactive until the owner binds them (`FINDINGS.md` §17d, IDEAS #2). The mic is
@@ -131,8 +130,7 @@ reboot: `TV_HOST=<tv ip> tools/check.py devices/telemetry-7.txt ar.TCL.cleanLaun
 This is the candidate installed on the unit on 2026-11-24 19:39 (home verified after install). It
 carries the gate-day fixes: the watch row reveals fully in both directions with column-preserving
 navigation, the row's captions never fade, the sideways row's poster repaint no longer depends on
-holder recycling, and the dev-only probe is unexported. `docs/project/PLAN.md` (status block) and
-`docs/BUDGET.md` still record the previous frozen candidate (364,463 B / `605fc14f…`); both are
+holder recycling, and the dev-only probe is unexported. The internal plan and budget still record the previous frozen candidate (364,463 B / `605fc14f…`); both are
 refreshed when the release is recorded. Verify the APK, not the build: `aapt2 dump badging` for
 package and locales, `apksigner verify --print-certs` for the certificate.
 
@@ -155,4 +153,4 @@ Publication is **gated on the owner's own tests**: cast with the owner's phone (
 anything else the owner wants before it goes out. Already verified by the owner on 2026-11-24: the
 physical remote's mic on this build chain (with the cold-start race documented above) and the
 launcher options over ADB. The decision to publish is the owner's, explicitly (PLAN §10 status,
-`docs/BUDGET.md` "Recording a release"). Until then this document is a draft and no release exists.
+the internal release budget). Until then this document is a draft and no release exists.
