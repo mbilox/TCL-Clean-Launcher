@@ -30,3 +30,15 @@ launcher/keystore.properties
 *.keystore
 # Local Android toolchain (JDK/SDK) is kept outside the repo, referenced by launcher/local.properties.
 .gradle/
+
+# Fork-internal project planning: measured evidence lives in the private branch, never published
+docs/project/APP-MAP.md
+docs/project/AUDIT.md
+docs/project/FINDINGS.md
+docs/project/IDEAS.md
+docs/project/LOG.md
+docs/project/NEXT-SESSION.md
+docs/project/PLAN-POSTER-FIX.md
+docs/project/PLAN.md
+docs/project/TASKS.md
+docs/project/UPSTREAM.md
