@@ -107,9 +107,13 @@ click on the Home's own voice button. A Home without that view loses the mic.
 
 ## How fast
 
+![Banner path, Native Heap: 18,396 KB full vs 10,340 KB Memory saver (−44 %)](screenshots/chart-heap-banner.png)
+
 On this unit (BeyondTV2, RTD2851, Android TV 11, 2 GB, 1080p), measured on the set itself with
 heapprofd and platform traces (the fork's measurement method in one line: A/B runs of the same
 build with the only variable being the banner decode path, heap attributed per call site):
+
+![Vendor Home vs clean launcher: jank, process memory, cold start](screenshots/chart-overview.png)
 
 - Native Heap for the banner path **−8,056 KB (−44 %)** in Memory saver, PSS flat.
 - Jank 0.00 %, cold start 471–528 ms, PSS ~29 MB (the measured baseline build), idle 2 frames/30 s,

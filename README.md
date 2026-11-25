@@ -36,6 +36,7 @@ watch-next row, and the measured memory wins — is documented in
   row dressed when the apps' poster URLs expire and this board's TvProvider breaks.
 - **Measured, not vibes**: banner path **−8,056 KB Native Heap (−44 %)** in Memory saver, PSS
   flat, jank 0.00 %, cold start 471–528 ms on the measured baseline. 300+ unit tests green.
+  Charts and the numbers behind them: **[the "How fast" section of FEATURES.md](docs/FEATURES.md#how-fast)**.
 - **Honest limits**: built and verified on this one unit; nothing tested on other TVs.
 
 ## Install
