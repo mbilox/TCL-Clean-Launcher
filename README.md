@@ -1,5 +1,9 @@
 <p align="center">
-  <img src="docs/screenshots/home-banner-full.png" alt="TCL Clean Launcher on a TCL BeyondTV2: per-app banners, clock, quick settings pills" width="800">
+  <img src="docs/screenshots/banner.png" alt="TCL Clean Launcher — a home launcher for one small TV: every setting from the remote, a content row that survives expired posters, −44 % Native Heap on the banner path" width="800">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/logo.png" alt="TCL Clean Launcher logo: a small TV with antennae, TCL on screen" width="140">
 </p>
 
 # TCL Clean Launcher
